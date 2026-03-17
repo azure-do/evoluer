@@ -1,0 +1,127 @@
+.page_company {
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+}
+
+.page_company ul {
+  padding: 0;
+  margin: 0;
+  margin: 0;
+}
+
+.page_company dt, .page_company dd {
+  margin: 0;
+}
+
+.page_company .inner {
+  max-width: 1100px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+@media (max-width: 1160px) {
+  .page_company .inner {
+    max-width: 100%;
+    width: 90%;
+  }
+}
+
+.read_area_bottom_company {
+  padding: 0 9%;
+}
+
+.read_list_01 {
+  width: 100%;
+  margin-bottom: 4px;
+}
+
+.read_title_01 {
+  width: 11%;
+  font-size: 1.8rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  line-height: 1.4;
+  padding-right: 3.4%;
+  position: relative;
+}
+
+.read_title_01::after {
+  position: absolute;
+  content: "";
+  right: 0;
+  top: 3px;
+  display: block;
+  width: 1px;
+  height: 20px;
+  background-color: #959594;
+}
+
+.read_content_01 {
+  width: 85%;
+  font-size: 1.6rem;
+  letter-spacing: 0.05em;
+  font-weight: 500;
+  line-height: 1.6;
+  padding-left: 3.4%;
+}
+
+.read_wrap_01 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  margin-bottom: 26px;
+}
+
+@media (max-width: 930px) {
+  .read_area_bottom_company {
+    padding: 0 4.5%;
+  }
+  .read_title_01 {
+    width: 14%;
+  }
+}
+
+@media (max-width: 768px) {
+  .read_area_bottom_company {
+    padding: 0;
+  }
+  .read_list_01 {
+    width: 100%;
+    margin-bottom: 4px;
+  }
+  .read_title_01 {
+    width: 100%;
+    font-size: 15px;
+    font-size: 4.16667vw;
+    padding-right: 0;
+    margin-bottom: 2.22222vw;
+  }
+  .read_title_01::after {
+    content: none;
+  }
+  .read_content_01 {
+    width: 100%;
+    font-size: 14px;
+    font-size: 3.88889vw;
+    padding-left: 0;
+    padding-bottom: 5.55556vw;
+  }
+  .read_wrap_01 {
+    -webkit-flex-wrap: wrap;
+        -ms-flex-wrap: wrap;
+            flex-wrap: wrap;
+    margin-bottom: 8.33333vw;
+    border-bottom: 1px solid #ddd;
+  }
+}
+.company .common_section .inner .read_area_bottom {
+  background: #fff;
+}
+.read_area_bottom .read_list_01 .read_wrap_01 .read_title_01 {
+  color: #333;
+}
+.read_area_bottom .read_list_01 .read_wrap_01 .read_content_01 {
+  color: #222;
+}
+/*# sourceMappingURL=company.css.map */
