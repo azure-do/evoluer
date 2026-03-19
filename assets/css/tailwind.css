@@ -1,0 +1,5 @@
+@import "tailwindcss";
+
+/* Tailwind v4 content sources (paths relative to this file) */
+@source "../../**/*.php";
+@source "../js/**/*.js";

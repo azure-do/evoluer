@@ -83,75 +83,49 @@
   <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-T748JC6" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <!-- End Google Tag Manager (noscript) -->
   <div id="wrapper">
-    <header class="pc-area">
-      <div class="mb mb-cont-no">
-        <h1 class="header_logo pc-area">
+    <header class="fixed top-0 left-0 w-full z-50 flex bg-white justify-center items-center py-1 md:py-2 lg:py- xl:py-8">
+      <div class="w-full flex justify-center md:justify-between items-center max-w-[1440px] mx-auto px-[100px]">
+        <h1 class="">
           <a href="<?php echo esc_url(home_url()); ?>">
             <img src="<?php echo get_template_directory_uri(); ?>/assets/images/logo_pc.svg" alt="Evoluer" />
           </a>
         </h1>
-        <nav class="header_content" id="menu">
-          <ul class="header_list">
+        <nav class="hidden md:block" id="menu">
+          <ul class="header_list flex items-center justify-center gap-[10px] text-[16px]">
             <li>
-              <p class="header_list_item"><a class="jp-point-font" href="<?php echo esc_url(home_url()); ?>">トップ<br><span class="en-font">Top</span></a>
-              </p>
+              <a href="<?php echo esc_url(home_url()); ?>" class="header_list_item text-center en-font px-[8px] xl:px-[16px] text-[16px] no-underline text-inherit">TOP</a>
             </li>
             <li>
-              <p class="header_list_item header_list_has_under"><a class="jp-point-font" href="javascript:void(0)">タレント<br><span class="en-font">Artist</span></a><span class="header_list_has_under_button"></span></p>
-              <div class=" menu_contents">
-                <ul class="header_list_sub">
-                  <?php
-                  global $post;
-                  $artist_args = array(
-                    'post_status'    => 'publish',
-                    'post_type'      => 'artist',
-                    'posts_per_page' => -1,
-                    'order'          => 'ASC',
-                    'orderby'        => 'post_date',
-                  );
-                  $artistPosts = get_posts($artist_args);
-                  if ($artistPosts) :
-                    foreach ($artistPosts as $post) : setup_postdata($post);
-                  ?>
-                      <li>
-                        <p>
-                          <a href="<?php the_permalink(); ?>">― <?php the_title(); ?></a>
-                        </p>
-                      </li>
-                  <?php
-                    endforeach;
-                  endif;
-                  ?>
-                </ul>
-              </div>
+              <a href="<?php echo esc_url(home_url()); ?>#artist" class="header_list_item text-center en-font px-[8px] xl:px-[16px] text-[16px] no-underline text-inherit">ARTIST</a>
             </li>
             <li>
-              <p class="header_list_item">
-                <a class="jp-point-font" href="<?php echo esc_url(home_url()); ?>#news">最新情報<br><span class="en-font">News</span></a>
-              </p>
+              <a href="<?php echo esc_url(home_url()); ?>#news" class="header_list_item text-center en-font px-[8px] xl:px-[16px] text-[16px] underline text-inherit">News</a>
             </li>
             <li>
-              <p class="header_list_item">
-                <a class="jp-point-font" href="<?php echo esc_url(home_url()); ?>#schedule">出演情報<br><span class="en-font">Schedule</span></a>
-              </p>
+              <a href="<?php echo esc_url(home_url()); ?>#schedule" class="header_list_item text-center en-font px-[8px] xl:px-[16px] text-[16px] underline text-inherit">Schedule</a>
             </li>
             <li>
-              <p class="header_list_item">
-                <a class="jp-point-font" href="<?php echo esc_url(home_url('/fc-entry/shibuki/')); ?>">ファンクラブ<br><span class="en-font">Fan Club</span></a>
-              </p>
+              <a href="<?php echo esc_url(home_url()); ?>/fanclub/" class="header_list_item text-center en-font px-[8px] xl:px-[16px] text-[16px] underline text-inherit">Fan Club</a>
             </li>
             <li>
-              <p class="header_list_item">
-                <a class="no-link jp-point-font" href="javascript:void(0)">オンラインショップ<br><span class="en-font">Comming Soon</span></a>
-              </p>
+              <a href="https://evoluer-shop.stores.jp/" target="_blank" rel="noopener" class="header_list_item text-center en-font px-[8px] xl:px-[16px] text-[16px] no-underline text-inherit">SHOPPING</a>
             </li>
             <li>
-              <p class="header_list_item">
-                <a class="jp-point-font" href="<?php echo esc_url(home_url('/contact/')); ?>">出演依頼<br><span class="en-font">Contact</span></a>
-              </p>
+              <a href="<?php echo esc_url(home_url()); ?>/login" class="rounded-[8px] header_btn_login ml-3 text-[16px] border border-[#13AA05] border-solid !border-[1.5px] !text-[#13AA05] bg-white px-6 py-2 rounded-[8px] inline-block no-underline">ログイン</a>
+            </li>
+            <li>
+              <a href="<?php echo esc_url(home_url()); ?>/register" class="rounded-[8px] header_btn_signup mx-2 text-[16px] border border-[#13AA05] bg-[#13AA05] !text-white px-6 py-2 rounded-[8px] inline-block no-underline">新規入会</a>
+            </li>
+            <li class="flex items-center">
+              <span class="inline-block cursor-pointer">
+                <svg viewBox="0 0 32 32" width="28" height="28" fill="currentColor" aria-hidden="true">
+                  <rect y="7" width="32" height="3" rx="1.5" />
+                  <rect y="14.5" width="32" height="3" rx="1.5" />
+                  <rect y="22" width="32" height="3" rx="1.5" />
+                </svg>
+              </span>
             </li>
           </ul>
-          <!-- <p class="header_contact_button"><a class="jp-point-font" href="<//?php echo esc_url(home_url('/contact/')); ?>"><span>出演依頼<br><span class="small en-font">Contact</span></span></a></p> -->
         </nav>
       </div>
     </header>
