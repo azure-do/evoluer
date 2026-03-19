@@ -58,7 +58,7 @@
         </h3>
       </div>
       <div class="w-full flex flex-col items-center mt-12 lg:mt-16 xl:mt-21 px-[30px]">
-        <div class="bg-white shadow rounded-[12px] px-10 lg:px-6 py-8 md:px-[88px] md:pt-[88px] md:pb-[70px] w-full mx-auto mb-8">
+        <div class="bg-white shadow rounded-[12px] px-10 lg:px-6 py-8 xl:px-[88px] md:pt-[88px] md:pb-[70px] w-full mx-auto mb-8">
           <!-- 入会手続方法 -->
           <div class="flex flex-col gap-8">
             <div class="flex flex-col md:flex-row md:items-center md:gap-10">
@@ -101,9 +101,6 @@
     </div>
   </div>
 </section>
-
-<?php echo do_shortcode('[pms-register]'); ?>
-
 <?php
 // Fan club page専用の追加フッター（既存フッターとは別に表示）
 get_template_part('template-parts/footer', 'fanclub');
