@@ -59,7 +59,7 @@ wp_enqueue_style(
 				<?php
 				// block="true" ensures the form is shown even when the user is logged-in.
 				// Styling is applied via page-scoped CSS.
-				echo do_shortcode( '[pms-login block="true" redirect_url="' . esc_url_raw( home_url( '/fanclub/' ) ) . '" logout_redirect_url="' . esc_url_raw( home_url( '/login/' ) ) . '" register_url="" lostpassword_url="" ]' );
+				echo do_shortcode( '[pms-login block="true" redirect_url="' . esc_url_raw( home_url( '/fanclub/' ) ) . '" logout_redirect_url="' . esc_url_raw( home_url( '/fc-entry/login/' ) ) . '" register_url="" lostpassword_url="" ]' );
 				?>
 			</div>
 

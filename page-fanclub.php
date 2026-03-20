@@ -11,7 +11,7 @@
       </h1>
       <div class="flex gap-5">
         <a href="<?php echo esc_url(home_url('/fanclub-event')); ?>" class="xl:min-w-[180px] rounded-[12px] header_btn_login ml-3 text-[16px] border border-[#13AA05] border-solid !border-[1.5px] !text-[#13AA05] px-8 py-3 inline-block no-underline text-center">イベントを見る</a>
-        <a href="<?php echo esc_url(home_url('/login')); ?>" class="xl:min-w-[180px] rounded-[12px] header_btn_login ml-3 text-[16px] border bg-[#13AA05] border-[#13AA05] border-solid !border-[1.5px] !text-white px-8 py-3 inline-block no-underline text-center">ログイン</a>
+        <a href="<?php echo esc_url(home_url('/fc-entry/login')); ?>" class="xl:min-w-[180px] rounded-[12px] header_btn_login ml-3 text-[16px] border bg-[#13AA05] border-[#13AA05] border-solid !border-[1.5px] !text-white px-8 py-3 inline-block no-underline text-center">ログイン</a>
       </div>
     </div>
   </div>
@@ -101,7 +101,4 @@
     </div>
   </div>
 </section>
-<?php
-// Fan club page専用の追加フッター（既存フッターとは別に表示）
-get_template_part('template-parts/footer', 'fanclub');
-?>
+<?php get_footer(); ?>

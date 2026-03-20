@@ -14,7 +14,7 @@ if ($member_name === '') {
 	$member_name = 'Member';
 }
 
-$logout_url = wp_logout_url(home_url('/login'));
+$logout_url = wp_logout_url(home_url('/fc-entry/login'));
 ?>
 
 <!DOCTYPE html>

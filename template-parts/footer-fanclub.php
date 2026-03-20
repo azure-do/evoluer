@@ -42,13 +42,15 @@
             <li><a href="<?php echo esc_url(home_url('/')); ?>">TOP</a></li>
             <li><a href="<?php echo esc_url(home_url('#news')); ?>">NEWS</a></li>
             <li>
-              <a href="<?php echo esc_url(home_url('/fc-entry/shibuki/')); ?>">
-                <span>FAN CLUB</span>
-                <div class="!text-[12px] pl-[12px] space-y-3 mt-2 mb-4">
+              <span>FAN CLUB</span>
+              <div class="!text-[12px] pl-[12px] space-y-3 mt-2 mb-4">
+                <a href="<?php echo esc_url(home_url('/fanclub/shibuki/')); ?>">
+                  <span class="jp-point-font block">シブキofficial fan club</span>
+                </a>
+                <a href="<?php echo esc_url(home_url('/fanclub/yonekichi/')); ?>">
                   <span class="jp-point-font block">中村米吉official fan club</span>
-                  <span class="jp-point-font block">中村米吉official fan club2</span>
-                </div>
-              </a>
+                </a>
+              </div>
             </li>
             <li><a href="<?php echo esc_url(home_url('/shop/')); ?>">SHOPPING</a></li>
           </ul>

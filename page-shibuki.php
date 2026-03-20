@@ -10,28 +10,48 @@ Template Name: Fanclub (Member) - Fanclub 1
 // NOTE: Placeholder content for now. Duplicate this page for Fanclub A/B and replace arrays/HTML later.
 $member_note = '会員期間は今後27日残りしました。';
 
-$news_items = array(
+// Fetch fc-news posts for current Fanclub page (A/B).
+$fanclub_term_slug = 'fanclub_a';
+$queried_page_id   = (int) get_queried_object_id();
+$fanclub_a_page_id = (int) get_option('efm_page_fanclub_a_id', 0);
+$fanclub_b_page_id = (int) get_option('efm_page_fanclub_b_id', 0);
+
+if (0 !== $queried_page_id && $queried_page_id === $fanclub_b_page_id) {
+	$fanclub_term_slug = 'fanclub_b';
+}
+
+$news_items = array();
+$news_query = new WP_Query(
 	array(
-		'date'  => '2026/03/10',
-		'tags'  => array('NEW', '更新'),
-		'title' => '2月16日(月)6:30〜 BS12「ハッスルミュージック」♯6　是非ご覧ください。',
-	),
-	array(
-		'date'  => '2026/03/10',
-		'tags'  => array('更新'),
-		'title' => '2月2日(月)6:30〜 BS12にて放送です。是非ご覧ください。',
-	),
-	array(
-		'date'  => '2026/01/11',
-		'tags'  => array(),
-		'title' => '1月11日(日)テレビ朝日「答えて当」！地元愛Qプレッシャー」に出演致します。',
-	),
-	array(
-		'date'  => '2026/01/10',
-		'tags'  => array(),
-		'title' => '1月12日(月)　日本テレビ「飲芸ちゃん＆香取慎吾　第１０回全国日本仮放大賞」にて審査員として出演致します。',
-	),
+		'post_type'      => 'fc-news',
+		'posts_per_page' => 4,
+		'orderby'        => 'date',
+		'order'          => 'DESC',
+		'tax_query'      => array(
+			array(
+				'taxonomy' => 'fc-fanclub',
+				'field'    => 'slug',
+				'terms'    => array($fanclub_term_slug),
+			),
+		),
+		'post_status' => 'publish',
+	)
 );
+
+if ($news_query->have_posts()) {
+	while ($news_query->have_posts()) {
+		$news_query->the_post();
+
+		$tag_names = wp_get_post_tags(get_the_ID(), array('fields' => 'names'));
+		$news_items[] = array(
+			'date'  => get_the_date('Y/m/d'),
+			'tags'  => is_array($tag_names) ? $tag_names : array(),
+			'title' => get_the_title(),
+			'url'   => get_permalink(),
+		);
+	}
+	wp_reset_postdata();
+}
 
 $gallery_items = array(
 	array(
@@ -92,7 +112,7 @@ $ticket_items = array(
 		</div>
 		<div class="bg-transparent border-t border-[#ffffff5c] overflow-hidden">
 			<?php foreach ($news_items as $item) : ?>
-				<a href="#" class="group block transition-colors">
+				<a href="<?php echo esc_url(! empty($item['url']) ? $item['url'] : '#'); ?>" class="group block transition-colors">
 					<div class="flex items-center justify-between px-[4px] md:px-[8px] xl:px-[22px] py-[12px] md:pt-[18px] md:pb-[20px] xl:pt-[18px] xl:pb-[20px] border-b border-[#ffffff5c]">
 						<div class="flex flex-col gap-[6px]">
 							<div class="flex items-center gap-[8px]">
@@ -219,4 +239,4 @@ $ticket_items = array(
 	</section>
 </main>
 
-<?php get_footer('fanclub-member'); ?>
+<?php get_footer(); ?>

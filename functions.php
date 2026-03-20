@@ -55,10 +55,12 @@ function add_files()
 		wp_enqueue_style('indexcss', get_template_directory_uri() . '/assets/css/index.css');
 		wp_enqueue_style('slickcss', get_template_directory_uri() . '/assets/css/slick.css');
 		wp_enqueue_style('slickthemecss', get_template_directory_uri() . '/assets/css/slick-theme.css');
-	} elseif (is_singular('fc-entry')) {
-		wp_enqueue_style('form_commoncss', get_template_directory_uri() . '/assets/css/form_common.css');
-		wp_enqueue_style('fanclubcss', get_template_directory_uri() . '/assets/css/fanclub.css');
-	} elseif (is_singular('artist')) {
+	} 
+	// elseif (is_singular('fc-entry')) {
+	// 	wp_enqueue_style('form_commoncss', get_template_directory_uri() . '/assets/css/form_common.css');
+	// 	wp_enqueue_style('fanclubcss', get_template_directory_uri() . '/assets/css/fanclub.css');
+	// } 
+	elseif (is_singular('artist')) {
 		wp_enqueue_style('artistcss', get_template_directory_uri() . '/assets/css/artist.css');
 		wp_enqueue_style('slickcss', get_template_directory_uri() . '/assets/css/slick.css');
 		wp_enqueue_style('slickthemecss', get_template_directory_uri() . '/assets/css/slick-theme.css');
@@ -88,11 +90,13 @@ function add_files()
 		} elseif (is_page('contact')) {
 			wp_enqueue_script('validjs', get_template_directory_uri() . '/assets/js/validation.js', array(), false, true);
 			wp_enqueue_script('contactjs', get_template_directory_uri() . '/assets/js/contact.js', array(), false, true);
-		} elseif (is_singular('fc-entry')) {
-			wp_enqueue_script('ajaxzip3js', get_template_directory_uri() . '/assets/js/ajaxzip3.js', array(), false, true);
-			wp_enqueue_script('validjs', get_template_directory_uri() . '/assets/js/validation.js', array(), false, true);
-			wp_enqueue_script('fcentryjs', get_template_directory_uri() . '/assets/js/fcentry.js', array(), false, true);
-		} elseif (is_singular('artist')) {
+		} 
+		// elseif (is_singular('fc-entry')) {
+		// 	wp_enqueue_script('ajaxzip3js', get_template_directory_uri() . '/assets/js/ajaxzip3.js', array(), false, true);
+		// 	wp_enqueue_script('validjs', get_template_directory_uri() . '/assets/js/validation.js', array(), false, true);
+		// 	wp_enqueue_script('fcentryjs', get_template_directory_uri() . '/assets/js/fcentry.js', array(), false, true);
+		// } 
+		elseif (is_singular('artist')) {
 			wp_enqueue_script('slickjs', get_template_directory_uri() . '/assets/js/slick.min.js', array(), false, true);
 			wp_enqueue_script('artistjs', get_template_directory_uri() . '/assets/js/artist.js', array(), false, true);
 		}
@@ -153,41 +157,6 @@ function custom_post_types()
 		),
 	);
 	register_post_type($slug_a, $option_a);
-
-	$label    = 'ファンクラブ';
-	$slug_f   = 'fc-entry';
-	$option_f = array(
-		'label'  => $label,
-		'labels' => array(
-			'name'               => $label,
-			'singular_name'      => $label,
-			'add_new_item'       => $label . 'を追加',
-			'add_new'            => '新規追加',
-			'new_item'           => '新規' . $label,
-			'view_item'          => $label . 'を表示',
-			'not_found'          => $label . 'は見つかりませんでした',
-			'not_found_in_trash' => 'ゴミ箱に' . $label . 'はありません。',
-			'search_items'       => $label . 'を検索',
-			'edit_item'          => $label . 'の編集',
-			'view_item'          => $label . 'を表示',
-			'all_items'          => $label . '一覧',
-		),
-		'capability_type' => 'post',
-		'rewrite'         => array(
-			'slug'       => $slug_f,
-			'with_front' => false
-		),
-		'public'       => true,
-		'query_var'    => true,
-		'has_archive'  => true,
-		'hierarchical' => false,
-		'show_ui'      => true,
-		'show_in_menu' => true,
-		'supports'     => array(
-			'title',
-		),
-	);
-	register_post_type($slug_f, $option_f);
 
 	$label    = '新着情報';
 	$slug_n   = 'news';
@@ -257,9 +226,47 @@ function custom_post_types()
 		'supports'     => array(
 			'title',
 			'editor',
+		'tags',
 		),
 	);
 	register_post_type($slug_nf, $option_nf);
+
+	// ファンクラブ種別（Fanclub A/B）カテゴリ：fc-news 投稿をA/Bで振り分ける
+	$tax_label = 'ファンクラブ カテゴリー';
+	$tax_slug  = 'fc-fanclub';
+	$args_tf   = array(
+		'labels' => array(
+			'name'              => $tax_label,
+			'singular_name'     => 'ファンクラブ',
+			'search_items'      => $tax_label . 'を検索',
+			'all_items'         => $tax_label . '一覧',
+			'edit_item'         => $tax_label . 'の編集',
+			'update_item'      => $tax_label . 'の更新',
+			'add_new_item'     => '新規' . $tax_label,
+			'menu_name'         => $tax_label,
+		),
+		'public'                => true,
+		'show_ui'               => true,
+		'show_admin_column'     => true,
+		'hierarchical'          => false,
+		'show_in_rest'          => true,
+		'update_count_callback' => '_update_post_term_count',
+		'rewrite'               => array(
+			'slug'       => $tax_slug,
+			'with_front' => false,
+		),
+	);
+	register_taxonomy($tax_slug, $slug_nf, $args_tf);
+
+	// Create Fanclub A/B terms if they don't exist yet.
+	$term_a = term_exists('fanclub_a', $tax_slug);
+	if (0 === $term_a || null === $term_a) {
+		wp_insert_term('ファンクラブA', $tax_slug, array('slug' => 'fanclub_a'));
+	}
+	$term_b = term_exists('fanclub_b', $tax_slug);
+	if (0 === $term_b || null === $term_b) {
+		wp_insert_term('ファンクラブB', $tax_slug, array('slug' => 'fanclub_b'));
+	}
 
 	$label    = '出演情報';
 	$slug_s   = 'schedule';
@@ -346,6 +353,61 @@ function custom_post_types()
 }
 add_action('init', 'custom_post_types');
 
+// If /fc-entry/* incorrectly resolves to the homepage, force the main query
+// to the matching Page so it renders the correct template (no redirect loops).
+add_action(
+	'template_redirect',
+	static function () {
+		$path = trim( parse_url( $_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH ), '/' );
+
+		// If WordPress is installed in a subdirectory (e.g. /evoluer/), strip it.
+		$site_path = trim( parse_url( home_url( '/' ), PHP_URL_PATH ), '/' );
+		if ( $site_path !== '' && 0 === strpos( $path, $site_path . '/' ) ) {
+			$path = trim( substr( $path, strlen( $site_path ) + 1 ), '/' );
+		}
+
+		if ( $path === '' || ( $path !== 'fc-entry' && 0 !== strpos( $path, 'fc-entry/' ) ) ) {
+			return;
+		}
+
+		$page = get_page_by_path( $path, OBJECT, 'page' );
+		// Also try just the last segment (in case pages are not hierarchical).
+		if ( ! $page && false !== strpos( $path, '/' ) ) {
+			$last = trim( substr( $path, strrpos( $path, '/' ) + 1 ), '/' );
+			if ( $last !== '' ) {
+				$page = get_page_by_path( $last, OBJECT, 'page' );
+			}
+		}
+
+		if ( ! $page ) {
+			return;
+		}
+
+		// Already resolved correctly.
+		if ( is_page( $page->ID ) ) {
+			return;
+		}
+
+		// Force WP_Query to render the correct Page.
+		global $wp_query, $post;
+
+		$post = $page;
+		setup_postdata( $post );
+
+		$wp_query->posts            = array( $page );
+		$wp_query->post             = $page;
+		$wp_query->post_count      = 1;
+		$wp_query->queried_object  = $page;
+
+		$wp_query->is_home          = false;
+		$wp_query->is_front_page   = false;
+		$wp_query->is_page          = true;
+		$wp_query->is_singular     = true;
+		$wp_query->is_404          = false;
+	},
+	0
+);
+
 
 //************************************************
 // 表示アイコンの変更
@@ -415,8 +477,6 @@ function change_default_title($title)
 		$title = '固定ページのタイトルを入力';
 	} elseif ($screen->post_type == 'artist') {		//カスタム投稿タイプ：artist
 		$title = 'タレント名を入力';
-	} elseif ($screen->post_type == 'fc-entry') {	//カスタム投稿タイプ：fc-entry
-		$title = 'タレント名を入力';
 	} elseif ($screen->post_type == 'news') {		//カスタム投稿タイプ：news
 		$title = '新着情報のタイトルを入力';
 	} elseif ($screen->post_type == 'schedule') {	//カスタム投稿タイプ：schedule
@@ -436,7 +496,6 @@ function my_custom_menu_order($menu_order)
 	return array(
 		'index.php',							//ダッシュボード
 		'edit.php?post_type=artist',			//カスタムポスト
-		'edit.php?post_type=fc-entry',			//カスタムポスト
 		'edit.php?post_type=news',				//カスタムポスト
 		'edit.php?post_type=schedule',			//カスタムポスト
 		'separator1',							//区切り線1
@@ -637,9 +696,6 @@ function my_add_meta_box($settings, $type, $id, $meta_type)
 {
 	//投稿タイプで判定
 	switch ($type) {
-		case 'fc-entry':
-			$settings[] = add_scf_artist_group();
-			break;
 		case 'artist':
 			$settings[] = add_scf_news_tax_group();
 			$settings[] = add_scf_schedule_tax_group();
@@ -964,7 +1020,7 @@ function required_title()
 	?>
 	<script>
 		jQuery(function($) {
-			if ($('#post_type').val() == 'artist' || $('#post_type').val() == 'fc-entry') {
+			if ($('#post_type').val() == 'artist') {
 				$('#post').submit(function(e) {
 					if ($('#title').val() == '') {
 						alert('タレント名を入力してください。');

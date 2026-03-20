@@ -12,28 +12,43 @@ Template Name: Fanclub (Member) - News FV
 $plan_label = '中村米吉official fan club';
 $member_note = '会員期間は今後27日残りしました。';
 
-$news_items = array(
+// Fetch fc-news posts for the logged-in Fanclub (A/B).
+// We use user role because /news/ page can be shared by both types.
+$current_user      = wp_get_current_user();
+$fanclub_term_slug = ( $current_user && in_array( 'fanclub_b', (array) $current_user->roles, true ) ) ? 'fanclub_b' : 'fanclub_a';
+
+$news_items = array();
+$news_query = new WP_Query(
 	array(
-		'date'  => '2026/03/10',
-		'tags'  => array('NEW', '更新'),
-		'title' => '2月16日(月)6:30〜 BS12「ハッスルミュージック」♯6　是非ご覧ください。',
-	),
-	array(
-		'date'  => '2026/03/10',
-		'tags'  => array('更新'),
-		'title' => '2月2日(月)6:30〜 BS12にて放送です。是非ご覧ください。',
-	),
-	array(
-		'date'  => '2026/01/11',
-		'tags'  => array(),
-		'title' => '1月11日(日)テレビ朝日「答えて当」！地元愛Qプレッシャー」に出演致します。',
-	),
-	array(
-		'date'  => '2026/01/10',
-		'tags'  => array(),
-		'title' => '1月12日(月)　日本テレビ「飲芸ちゃん＆香取慎吾　第１０回全国日本仮放大賞」にて審査員として出演致します。',
-	),
+		'post_type'      => 'fc-news',
+		'posts_per_page' => 4,
+		'orderby'        => 'date',
+		'order'          => 'DESC',
+		'tax_query'      => array(
+			array(
+				'taxonomy' => 'fc-fanclub',
+				'field'    => 'slug',
+				'terms'    => array($fanclub_term_slug),
+			),
+		),
+		'post_status' => 'publish',
+	)
 );
+
+if ($news_query->have_posts()) {
+	while ($news_query->have_posts()) {
+		$news_query->the_post();
+
+		$tag_names = wp_get_post_tags(get_the_ID(), array('fields' => 'names'));
+		$news_items[] = array(
+			'date'  => get_the_date('Y/m/d'),
+			'tags'  => is_array($tag_names) ? $tag_names : array(),
+			'title' => get_the_title(),
+			'url'   => get_permalink(),
+		);
+	}
+	wp_reset_postdata();
+}
 ?>
 
 <main id="container" class="bg-[#DDE4DE]">
@@ -49,7 +64,7 @@ $news_items = array(
 		<div class="bg-transparent border border-[#E5E5E5] rounded-[6px] overflow-hidden">
 			<?php foreach ($news_items as $item) : ?>
 				<a
-					href="#"
+					href="<?php echo esc_url(! empty($item['url']) ? $item['url'] : '#'); ?>"
 					class="group block bg-[#F3F5F3] hover:bg-white transition-colors">
 					<div class="flex items-center justify-between px-[22px] py-[18px] border-b border-[#E5E5E5]">
 						<div class="flex flex-col gap-[6px]">
@@ -91,4 +106,4 @@ $news_items = array(
 	</section>
 </main>
 
-<?php get_footer('fanclub-member'); ?>
+<?php get_footer(); ?>
