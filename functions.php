@@ -55,7 +55,7 @@ function add_files()
 		wp_enqueue_style('indexcss', get_template_directory_uri() . '/assets/css/index.css');
 		wp_enqueue_style('slickcss', get_template_directory_uri() . '/assets/css/slick.css');
 		wp_enqueue_style('slickthemecss', get_template_directory_uri() . '/assets/css/slick-theme.css');
-	} 
+	}
 	// elseif (is_singular('fc-entry')) {
 	// 	wp_enqueue_style('form_commoncss', get_template_directory_uri() . '/assets/css/form_common.css');
 	// 	wp_enqueue_style('fanclubcss', get_template_directory_uri() . '/assets/css/fanclub.css');
@@ -90,7 +90,7 @@ function add_files()
 		} elseif (is_page('contact')) {
 			wp_enqueue_script('validjs', get_template_directory_uri() . '/assets/js/validation.js', array(), false, true);
 			wp_enqueue_script('contactjs', get_template_directory_uri() . '/assets/js/contact.js', array(), false, true);
-		} 
+		}
 		// elseif (is_singular('fc-entry')) {
 		// 	wp_enqueue_script('ajaxzip3js', get_template_directory_uri() . '/assets/js/ajaxzip3.js', array(), false, true);
 		// 	wp_enqueue_script('validjs', get_template_directory_uri() . '/assets/js/validation.js', array(), false, true);
@@ -226,7 +226,79 @@ function custom_post_types()
 		'supports'     => array(
 			'title',
 			'editor',
-		'tags',
+			'tags',
+		),
+	);
+
+	register_post_type($slug_nf, $option_nf);
+	$label    = 'ファンクラブ・ギャラリー';
+	$slug_nf   = 'fc-gallery';
+	$option_nf = array(
+		'label'  => $label,
+		'labels' => array(
+			'name'               => $label,
+			'singular_name'      => $label,
+			'add_new_item'       => $label . 'を追加',
+			'add_new'            => '新規追加',
+			'new_item'           => '新規' . $label,
+			'view_item'          => $label . 'を表示',
+			'not_found'          => $label . 'は見つかりませんでした',
+			'not_found_in_trash' => 'ゴミ箱に' . $label . 'はありません。',
+			'search_items'       => $label . 'を検索',
+			'edit_item'          => $label . 'の編集',
+			'view_item'          => $label . 'を表示',
+			'all_items'          => $label . '一覧',
+		),
+		'capability_type' => 'post',
+		'rewrite'         => array(
+			'slug'       => $slug_nf,
+			'with_front' => false
+		),
+		'public'       => true,
+		'query_var'    => true,
+		'has_archive'  => true,
+		'hierarchical' => false,
+		'show_ui'      => true,
+		'show_in_menu' => true,
+		'supports'     => array(
+			'title',
+			'editor',
+			'tags',
+		),
+	);
+	register_post_type($slug_nf, $option_nf);
+
+	$label    = 'ファンクラブ・ムービー';
+	$slug_nf   = 'fc-movie';
+	$option_nf = array(
+		'label'  => $label,
+		'labels' => array(
+			'name'               => $label,
+			'singular_name'      => $label,
+			'add_new_item'       => $label . 'を追加',
+			'add_new'            => '新規追加',
+			'new_item'           => '新規' . $label,
+			'view_item'          => $label . 'を表示',
+			'not_found'          => $label . 'は見つかりませんでした',
+			'not_found_in_trash' => 'ゴミ箱に' . $label . 'はありません。',
+			'search_items'       => $label . 'を検索',
+			'edit_item'          => $label . 'の編集',
+			'view_item'          => $label . 'を表示',
+			'all_items'          => $label . '一覧',
+		),
+		'capability_type' => 'post',
+		'rewrite'         => array(
+			'slug'       => $slug_nf,
+			'with_front' => false
+		),
+		'public'       => true,
+		'query_var'    => true,
+		'has_archive'  => true,
+		'hierarchical' => false,
+		'show_ui'      => true,
+		'show_in_menu' => true,
+		'supports'     => array(
+			'title',
 		),
 	);
 	register_post_type($slug_nf, $option_nf);
@@ -248,7 +320,7 @@ function custom_post_types()
 		'public'                => true,
 		'show_ui'               => true,
 		'show_admin_column'     => true,
-		'hierarchical'          => false,
+		'hierarchical'          => true,
 		'show_in_rest'          => true,
 		'update_count_callback' => '_update_post_term_count',
 		'rewrite'               => array(
@@ -358,33 +430,33 @@ add_action('init', 'custom_post_types');
 add_action(
 	'template_redirect',
 	static function () {
-		$path = trim( parse_url( $_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH ), '/' );
+		$path = trim(parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH), '/');
 
 		// If WordPress is installed in a subdirectory (e.g. /evoluer/), strip it.
-		$site_path = trim( parse_url( home_url( '/' ), PHP_URL_PATH ), '/' );
-		if ( $site_path !== '' && 0 === strpos( $path, $site_path . '/' ) ) {
-			$path = trim( substr( $path, strlen( $site_path ) + 1 ), '/' );
+		$site_path = trim(parse_url(home_url('/'), PHP_URL_PATH), '/');
+		if ($site_path !== '' && 0 === strpos($path, $site_path . '/')) {
+			$path = trim(substr($path, strlen($site_path) + 1), '/');
 		}
 
-		if ( $path === '' || ( $path !== 'fc-entry' && 0 !== strpos( $path, 'fc-entry/' ) ) ) {
+		if ($path === '' || ($path !== 'fc-entry' && 0 !== strpos($path, 'fc-entry/'))) {
 			return;
 		}
 
-		$page = get_page_by_path( $path, OBJECT, 'page' );
+		$page = get_page_by_path($path, OBJECT, 'page');
 		// Also try just the last segment (in case pages are not hierarchical).
-		if ( ! $page && false !== strpos( $path, '/' ) ) {
-			$last = trim( substr( $path, strrpos( $path, '/' ) + 1 ), '/' );
-			if ( $last !== '' ) {
-				$page = get_page_by_path( $last, OBJECT, 'page' );
+		if (! $page && false !== strpos($path, '/')) {
+			$last = trim(substr($path, strrpos($path, '/') + 1), '/');
+			if ($last !== '') {
+				$page = get_page_by_path($last, OBJECT, 'page');
 			}
 		}
 
-		if ( ! $page ) {
+		if (! $page) {
 			return;
 		}
 
 		// Already resolved correctly.
-		if ( is_page( $page->ID ) ) {
+		if (is_page($page->ID)) {
 			return;
 		}
 
@@ -392,9 +464,9 @@ add_action(
 		global $wp_query, $post;
 
 		$post = $page;
-		setup_postdata( $post );
+		setup_postdata($post);
 
-		$wp_query->posts            = array( $page );
+		$wp_query->posts            = array($page);
 		$wp_query->post             = $page;
 		$wp_query->post_count      = 1;
 		$wp_query->queried_object  = $page;

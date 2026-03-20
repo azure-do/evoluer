@@ -39,12 +39,29 @@ if ($news_query->have_posts()) {
 	while ($news_query->have_posts()) {
 		$news_query->the_post();
 
+		$post_id   = get_the_ID();
 		$tag_names = wp_get_post_tags(get_the_ID(), array('fields' => 'names'));
+		$all_meta  = get_post_meta( $post_id );
+		$is_out    = false;
+		foreach ( $all_meta as $meta_values ) {
+			foreach ( (array) $meta_values as $meta_value ) {
+				$meta_value = (string) $meta_value;
+				if ( $meta_value === 'fc_out_news' ) {
+					$is_out = true;
+					break 2;
+				}
+			}
+		}
+
+		$out_link = trim( (string) get_post_meta( $post_id, 'out_link', true ) );
+		$url      = $is_out && $out_link !== '' ? $out_link : get_permalink( $post_id );
+
 		$news_items[] = array(
-			'date'  => get_the_date('Y/m/d'),
-			'tags'  => is_array($tag_names) ? $tag_names : array(),
-			'title' => get_the_title(),
-			'url'   => get_permalink(),
+			'date'        => get_the_date('Y/m/d'),
+			'tags'        => is_array($tag_names) ? $tag_names : array(),
+			'title'       => get_the_title(),
+			'url'         => $url,
+			'is_external' => $is_out && $out_link !== '',
 		);
 	}
 	wp_reset_postdata();
@@ -65,6 +82,7 @@ if ($news_query->have_posts()) {
 			<?php foreach ($news_items as $item) : ?>
 				<a
 					href="<?php echo esc_url(! empty($item['url']) ? $item['url'] : '#'); ?>"
+					<?php echo ! empty($item['is_external']) ? 'target="_blank" rel="noopener noreferrer"' : ''; ?>
 					class="group block bg-[#F3F5F3] hover:bg-white transition-colors">
 					<div class="flex items-center justify-between px-[22px] py-[18px] border-b border-[#E5E5E5]">
 						<div class="flex flex-col gap-[6px]">

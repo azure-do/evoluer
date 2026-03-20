@@ -42,12 +42,28 @@ if ($news_query->have_posts()) {
 	while ($news_query->have_posts()) {
 		$news_query->the_post();
 
-		$tag_names = wp_get_post_tags(get_the_ID(), array('fields' => 'names'));
+		$post_id   = get_the_ID();
+		$tag_names = wp_get_post_tags($post_id, array('fields' => 'names'));
+		$all_meta  = get_post_meta( $post_id );
+		$is_out    = false;
+		foreach ( $all_meta as $meta_values ) {
+			foreach ( (array) $meta_values as $meta_value ) {
+				$meta_value = (string) $meta_value;
+				if ( $meta_value === 'fc_out_news' ) {
+					$is_out = true;
+					break 2;
+				}
+			}
+		}
+		$out_link = trim( (string) get_post_meta( $post_id, 'out_link', true ) );
+		$url      = $is_out && $out_link !== '' ? $out_link : get_permalink( $post_id );
+
 		$news_items[] = array(
 			'date'  => get_the_date('Y/m/d'),
 			'tags'  => is_array($tag_names) ? $tag_names : array(),
 			'title' => get_the_title(),
-			'url'   => get_permalink(),
+			'url'   => $url,
+			'is_external' => $is_out && $out_link !== '',
 		);
 	}
 	wp_reset_postdata();
@@ -112,7 +128,7 @@ $ticket_items = array(
 		</div>
 		<div class="bg-transparent border-t border-[#ffffff5c] overflow-hidden">
 			<?php foreach ($news_items as $item) : ?>
-				<a href="<?php echo esc_url(! empty($item['url']) ? $item['url'] : '#'); ?>" class="group block transition-colors">
+				<a href="<?php echo esc_url(! empty($item['url']) ? $item['url'] : '#'); ?>" <?php echo ! empty($item['is_external']) ? 'target="_blank" rel="noopener noreferrer"' : ''; ?> class="group block transition-colors">
 					<div class="flex items-center justify-between px-[4px] md:px-[8px] xl:px-[22px] py-[12px] md:pt-[18px] md:pb-[20px] xl:pt-[18px] xl:pb-[20px] border-b border-[#ffffff5c]">
 						<div class="flex flex-col gap-[6px]">
 							<div class="flex items-center gap-[8px]">
@@ -205,7 +221,7 @@ $ticket_items = array(
 			<div class="flex justify-center mt-[26px] md:mt-[40px] xl:mt-[54px]">
 				<a href="#" class="inline-flex items-center gap-[10px] px-[30px] xl:px-[70px] py-[10px] border border-[#13AA05] !text-[#13AA05] text-[14px] rounded-[2px]">
 					<span class="font-bold">>></span>
-					<span>もっと見る</span>
+					<span>もっと見る</span
 				</a>
 			</div>
 		</div>
