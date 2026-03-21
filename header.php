@@ -111,10 +111,10 @@
               <a href="https://evoluer-shop.stores.jp/" target="_blank" rel="noopener" class="header_list_item text-center en-font px-[8px] xl:px-[16px] text-[16px] no-underline text-inherit">SHOPPING</a>
             </li>
             <li>
-              <a href="<?php echo esc_url(home_url()); ?>/login" class="rounded-[8px] header_btn_login ml-3 text-[16px] border border-[#13AA05] border-solid !border-[1.5px] !text-[#13AA05] bg-white px-6 py-2 rounded-[8px] inline-block no-underline">ログイン</a>
+              <a href="<?php echo esc_url(home_url('/fanclub/login/')); ?>" class="rounded-[8px] header_btn_login ml-3 text-[16px] border border-[#13AA05] border-solid !border-[1.5px] !text-[#13AA05] bg-white px-6 py-2 rounded-[8px] inline-block no-underline">ログイン</a>
             </li>
             <li>
-              <a href="<?php echo esc_url(home_url()); ?>/register" class="rounded-[8px] header_btn_signup mx-2 text-[16px] border border-[#13AA05] bg-[#13AA05] !text-white px-6 py-2 rounded-[8px] inline-block no-underline">新規入会</a>
+              <a href="<?php echo esc_url(home_url('/fanclub/register/')); ?>" class="rounded-[8px] header_btn_signup mx-2 text-[16px] border border-[#13AA05] bg-[#13AA05] !text-white px-6 py-2 rounded-[8px] inline-block no-underline">新規入会</a>
             </li>
             <li class="flex items-center">
               <span class="inline-block cursor-pointer">

@@ -231,7 +231,7 @@ function custom_post_types()
 	);
 
 	register_post_type($slug_nf, $option_nf);
-	$label    = 'ファンクラブ・ギャラリー';
+	$label    = 'ファンクラブ・画廊';
 	$slug_nf   = 'fc-gallery';
 	$option_nf = array(
 		'label'  => $label,
@@ -268,7 +268,7 @@ function custom_post_types()
 	);
 	register_post_type($slug_nf, $option_nf);
 
-	$label    = 'ファンクラブ・ムービー';
+	$label    = 'ファンクラブ・動画';
 	$slug_nf   = 'fc-movie';
 	$option_nf = array(
 		'label'  => $label,
@@ -299,6 +299,43 @@ function custom_post_types()
 		'show_in_menu' => true,
 		'supports'     => array(
 			'title',
+			'editor',
+		),
+	);
+	register_post_type($slug_nf, $option_nf);
+
+	$label    = 'ファンクラブ・チケット';
+	$slug_nf   = 'fc-ticket';
+	$option_nf = array(
+		'label'  => $label,
+		'labels' => array(
+			'name'               => $label,
+			'singular_name'      => $label,
+			'add_new_item'       => $label . 'を追加',
+			'add_new'            => '新規追加',
+			'new_item'           => '新規' . $label,
+			'view_item'          => $label . 'を表示',
+			'not_found'          => $label . 'は見つかりませんでした',
+			'not_found_in_trash' => 'ゴミ箱に' . $label . 'はありません。',
+			'search_items'       => $label . 'を検索',
+			'edit_item'          => $label . 'の編集',
+			'view_item'          => $label . 'を表示',
+			'all_items'          => $label . '一覧',
+		),
+		'capability_type' => 'post',
+		'rewrite'         => array(
+			'slug'       => $slug_nf,
+			'with_front' => false
+		),
+		'public'       => true,
+		'query_var'    => true,
+		'has_archive'  => true,
+		'hierarchical' => false,
+		'show_ui'      => true,
+		'show_in_menu' => true,
+		'supports'     => array(
+			'title',
+			'editor',
 		),
 	);
 	register_post_type($slug_nf, $option_nf);
@@ -328,7 +365,8 @@ function custom_post_types()
 			'with_front' => false,
 		),
 	);
-	register_taxonomy($tax_slug, $slug_nf, $args_tf);
+	// Bind this taxonomy to fanclub news/gallery/movie/ticket post types.
+	register_taxonomy($tax_slug, array('fc-news', 'fc-gallery', 'fc-movie', 'fc-ticket'), $args_tf);
 
 	// Create Fanclub A/B terms if they don't exist yet.
 	$term_a = term_exists('fanclub_a', $tax_slug);
@@ -570,6 +608,10 @@ function my_custom_menu_order($menu_order)
 		'edit.php?post_type=artist',			//カスタムポスト
 		'edit.php?post_type=news',				//カスタムポスト
 		'edit.php?post_type=schedule',			//カスタムポスト
+		'edit.php?post_type=fc-news',			//ファンクラブ新着情報
+		'edit.php?post_type=fc-gallery',		//ファンクラブ画廊
+		'edit.php?post_type=fc-movie',			//ファンクラブ動画
+		'edit.php?post_type=fc-ticket',			//ファンクラブチケット
 		'separator1',							//区切り線1
 		'edit.php?post_type=page',				//固定ページ
 		'upload.php', 							//メディア

@@ -69,49 +69,155 @@ if ($news_query->have_posts()) {
 	wp_reset_postdata();
 }
 
-$gallery_items = array(
+$gallery_items  = array();
+$gallery_query = new WP_Query(
 	array(
-		// Replace with real gallery images later.
-		'img' => get_template_directory_uri() . '/assets/images/profile-official-ico.svg',
-		'alt' => 'gallery image 1',
-	),
-	array(
-		'img' => get_template_directory_uri() . '/assets/images/profile-official-ico.svg',
-		'alt' => 'gallery image 2',
-	),
-	array(
-		'img' => get_template_directory_uri() . '/assets/images/profile-official-ico.svg',
-		'alt' => 'gallery image 3',
-	),
+		'post_type'      => 'fc-gallery',
+		'posts_per_page' => 6,
+		'orderby'        => 'date',
+		'order'          => 'DESC',
+		'tax_query'      => array(
+			array(
+				'taxonomy' => 'fc-fanclub',
+				'field'    => 'slug',
+				'terms'    => array($fanclub_term_slug),
+			),
+		),
+		'post_status' => 'publish',
+	)
 );
 
-$movie_items = array(
+if ( $gallery_query->have_posts() ) {
+	while ( $gallery_query->have_posts() ) {
+		$gallery_query->the_post();
+		$post_id   = get_the_ID();
+		$fc_image  = get_post_meta( $post_id, 'fc_image', true );
+		$image_url = '';
+
+		if ( is_numeric( $fc_image ) ) {
+			$image_url = (string) wp_get_attachment_image_url( (int) $fc_image, 'large' );
+		} elseif ( is_array( $fc_image ) ) {
+			if ( isset( $fc_image['url'] ) ) {
+				$image_url = (string) $fc_image['url'];
+			} elseif ( isset( $fc_image[0]['url'] ) ) {
+				$image_url = (string) $fc_image[0]['url'];
+			}
+		} elseif ( is_string( $fc_image ) ) {
+			$image_url = $fc_image;
+		}
+
+		if ( $image_url === '' ) {
+			$image_url = (string) get_the_post_thumbnail_url( $post_id, 'large' );
+		}
+
+		if ( $image_url !== '' ) {
+			$gallery_items[] = array(
+				'img' => $image_url,
+				'alt' => get_the_title( $post_id ),
+			);
+		}
+	}
+	wp_reset_postdata();
+}
+
+$movie_items  = array();
+$movie_query = new WP_Query(
 	array(
-		// Replace with real movie thumbnails later.
-		'img' => get_template_directory_uri() . '/assets/images/profile-official-ico.svg',
-		'alt' => 'movie thumbnail 1',
-	),
-	array(
-		'img' => get_template_directory_uri() . '/assets/images/profile-official-ico.svg',
-		'alt' => 'movie thumbnail 2',
-	),
-	array(
-		'img' => get_template_directory_uri() . '/assets/images/profile-official-ico.svg',
-		'alt' => 'movie thumbnail 3',
-	),
+		'post_type'      => 'fc-movie',
+		'posts_per_page' => 6,
+		'orderby'        => 'date',
+		'order'          => 'DESC',
+		'tax_query'      => array(
+			array(
+				'taxonomy' => 'fc-fanclub',
+				'field'    => 'slug',
+				'terms'    => array($fanclub_term_slug),
+			),
+		),
+		'post_status' => 'publish',
+	)
 );
 
-$ticket_items = array(
+if ( $movie_query->have_posts() ) {
+	while ( $movie_query->have_posts() ) {
+		$movie_query->the_post();
+		$post_id    = get_the_ID();
+		$fc_video   = get_post_meta( $post_id, 'fc_video', true );
+		$video_url  = '';
+		$is_video   = false;
+		$mime_type  = '';
+
+		if ( is_numeric( $fc_video ) ) {
+			$attachment_id = (int) $fc_video;
+			$mime_type     = (string) get_post_mime_type( $attachment_id );
+			$is_video      = strpos( $mime_type, 'video/' ) === 0;
+			if ( $is_video ) {
+				$video_url = (string) wp_get_attachment_url( $attachment_id );
+			}
+		} elseif ( is_array( $fc_video ) ) {
+			$attachment_id = isset( $fc_video['id'] ) ? (int) $fc_video['id'] : 0;
+			if ( $attachment_id > 0 ) {
+				$mime_type = (string) get_post_mime_type( $attachment_id );
+				$is_video  = strpos( $mime_type, 'video/' ) === 0;
+				if ( $is_video ) {
+					$video_url = (string) wp_get_attachment_url( $attachment_id );
+				}
+			}
+			if ( ! $is_video && isset( $fc_video['type'] ) ) {
+				$mime_type = (string) $fc_video['type'];
+				$is_video  = strpos( $mime_type, 'video/' ) === 0;
+			}
+			if ( ! $is_video && isset( $fc_video['url'] ) ) {
+				$video_url = (string) $fc_video['url'];
+				$is_video  = (bool) preg_match( '/\.(mp4|webm|ogg|mov|m4v)(\?.*)?$/i', $video_url );
+			}
+		} elseif ( is_string( $fc_video ) && $fc_video !== '' ) {
+			$video_url = $fc_video;
+			$is_video  = (bool) preg_match( '/\.(mp4|webm|ogg|mov|m4v)(\?.*)?$/i', $video_url );
+		}
+
+		if ( $is_video && $video_url !== '' ) {
+			$movie_items[] = array(
+				'video_url' => $video_url,
+				'mime_type' => $mime_type,
+				'title'     => get_the_title( $post_id ),
+			);
+		}
+	}
+	wp_reset_postdata();
+}
+
+$ticket_items  = array();
+$ticket_query = new WP_Query(
 	array(
-		'text' => 'ミュージカル「レ・ビザック」東京公演 ファンクラブ先行受付',
-	),
-	array(
-		'text' => '「エリザベート TAKARAZUKA 30th スペシャル・ガラ・コンサート」FC先行チケット受付',
-	),
-	array(
-		'text' => '「エリザベート TAKARAZUKA 30th スペシャル・ガラ・コンサート」FC先行チケット受付',
-	),
+		'post_type'      => 'fc-ticket',
+		'posts_per_page' => 6,
+		'orderby'        => 'date',
+		'order'          => 'DESC',
+		'tax_query'      => array(
+			array(
+				'taxonomy' => 'fc-fanclub',
+				'field'    => 'slug',
+				'terms'    => array($fanclub_term_slug),
+			),
+		),
+		'post_status' => 'publish',
+	)
 );
+
+if ( $ticket_query->have_posts() ) {
+	while ( $ticket_query->have_posts() ) {
+		$ticket_query->the_post();
+		$post_id = get_the_ID();
+		$content = trim( (string) get_post_field( 'post_content', $post_id ) );
+
+		$ticket_items[] = array(
+			'title'   => get_the_title( $post_id ),
+			'content' => $content !== '' ? apply_filters( 'the_content', $content ) : '',
+		);
+	}
+	wp_reset_postdata();
+}
 ?>
 
 <main id="container" class="bg-[#DDE4DE] pb-[20px] md:pb-[30px] xl:pb-[40px]">
@@ -174,16 +280,20 @@ $ticket_items = array(
 				</h3>
 			</div>
 
-			<div class="grid grid-cols-1 md:grid-cols-3 gap-[34px]">
-				<?php foreach ($gallery_items as $g) : ?>
-					<a href="#" class="group relative block rounded-[12px] overflow-hidden bg-[#C9CDD0]">
-						<img
-							src="<?php echo esc_url($g['img']); ?>"
-							alt="<?php echo esc_attr($g['alt']); ?>"
-							class="w-full h-[240px] object-cover transition-transform duration-200 group-hover:scale-[1.02]" />
-					</a>
-				<?php endforeach; ?>
-			</div>
+			<?php if ( ! empty($gallery_items) ) : ?>
+				<div class="grid grid-cols-1 md:grid-cols-3 gap-[34px]">
+					<?php foreach ($gallery_items as $g) : ?>
+						<div class="group relative block rounded-[12px] overflow-hidden bg-[#C9CDD0]">
+							<img
+								src="<?php echo esc_url($g['img']); ?>"
+								alt="<?php echo esc_attr($g['alt']); ?>"
+								class="!w-full !h-[240px] object-cover transition-transform duration-200 group-hover:scale-[1.02]" />
+						</div>
+					<?php endforeach; ?>
+				</div>
+			<?php else : ?>
+				<p class="text-center text-[#666] text-[14px] md:text-[16px]">ギャラリーはまだありません。</p>
+			<?php endif; ?>
 
 			<div class="flex justify-center mt-[26px] md:mt-[40px] xl:mt-[54px]">
 				<a href="#" class="inline-flex items-center gap-[10px] px-[30px] xl:px-[70px] py-[10px] border border-[#13AA05] !text-[#13AA05] text-[14px] rounded-[2px]">
@@ -202,21 +312,19 @@ $ticket_items = array(
 				</h3>
 			</div>
 
-			<div class="grid grid-cols-1 md:grid-cols-3 gap-[34px] mt-[30px]">
-				<?php foreach ($movie_items as $m) : ?>
-					<a href="#" class="group relative block rounded-[12px] overflow-hidden bg-[#C9CDD0]">
-						<img
-							src="<?php echo esc_url($m['img']); ?>"
-							alt="<?php echo esc_attr($m['alt']); ?>"
-							class="w-full h-[220px] object-cover transition-transform duration-200 group-hover:scale-[1.02]" />
-						<svg class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2" width="80" height="80" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-							<path
-								d="M20 12V52L52 32L20 12Z"
-								fill="#fff" />
-						</svg>
-					</a>
-				<?php endforeach; ?>
-			</div>
+			<?php if ( ! empty($movie_items) ) : ?>
+				<div class="grid grid-cols-1 md:grid-cols-3 gap-[34px] mt-[30px]">
+					<?php foreach ($movie_items as $m) : ?>
+						<div class="group relative block rounded-[12px] overflow-hidden bg-[#C9CDD0]">
+							<video class="w-full h-[220px] object-cover" controls preload="metadata" playsinline>
+								<source src="<?php echo esc_url($m['video_url']); ?>"<?php echo ! empty($m['mime_type']) ? ' type="' . esc_attr($m['mime_type']) . '"' : ''; ?>>
+							</video>
+						</div>
+					<?php endforeach; ?>
+				</div>
+			<?php else : ?>
+				<p class="text-center text-[#666] text-[14px] md:text-[16px]">ムービーはまだありません。</p>
+			<?php endif; ?>
 
 			<div class="flex justify-center mt-[26px] md:mt-[40px] xl:mt-[54px]">
 				<a href="#" class="inline-flex items-center gap-[10px] px-[30px] xl:px-[70px] py-[10px] border border-[#13AA05] !text-[#13AA05] text-[14px] rounded-[2px]">
@@ -235,15 +343,24 @@ $ticket_items = array(
 				</h3>
 			</div>
 
-			<div class="bg-transparent overflow-hidden mt-[30px]">
-				<?php foreach ($ticket_items as $t) : ?>
-					<div class="px-[4px] md:px-[8px] xl:px-[22px] py-[12px] md:pt-[18px] md:pb-[20px] xl:pt-[18px] xl:pb-[20px] border-b border-[#ffffff5c] ">
-						<p class="text-[#222] text-[14px] lg:text-[14px] xl:text-[16px] leading-relaxed">
-							<?php echo esc_html($t['text']); ?>
-						</p>
-					</div>
-				<?php endforeach; ?>
-			</div>
+			<?php if ( ! empty($ticket_items) ) : ?>
+				<div class="bg-transparent overflow-hidden mt-[30px]">
+					<?php foreach ($ticket_items as $t) : ?>
+						<div class="px-[4px] md:px-[8px] xl:px-[22px] py-[12px] md:pt-[18px] md:pb-[20px] xl:pt-[18px] xl:pb-[20px] border-b border-[#ffffff5c] ">
+							<p class="text-[#222] text-[14px] lg:text-[14px] xl:text-[16px] leading-relaxed font-semibold">
+								<?php echo esc_html($t['title']); ?>
+							</p>
+							<?php if ( ! empty($t['content']) ) : ?>
+								<div class="mt-[8px] text-[#222] text-[13px] md:text-[15px] leading-relaxed">
+									<?php echo $t['content']; ?>
+								</div>
+							<?php endif; ?>
+						</div>
+					<?php endforeach; ?>
+				</div>
+			<?php else : ?>
+				<p class="text-center text-[#666] text-[14px] md:text-[16px]">チケット情報はまだありません。</p>
+			<?php endif; ?>
 
 			<div class="flex justify-center mt-[26px] md:mt-[40px] xl:mt-[54px]">
 				<a href="#" class="inline-flex items-center gap-[10px] px-[30px] xl:px-[70px] py-[10px] border border-[#13AA05] !text-[#13AA05] text-[14px] rounded-[2px]">

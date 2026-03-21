@@ -36,15 +36,11 @@ wp_enqueue_style(
 			</div>
 
 			<?php
-			// Resolve register / lost password URLs from PMS (so links stay correct).
-			$register_url = home_url( '/register/' );
+			// Fanclub signup: EFM registration at /fanclub/register/
+			$register_url = home_url( '/fanclub/register/' );
 			$lost_url     = home_url( '/lost-password/' );
 			if ( function_exists( 'pms_get_page' ) ) {
-				$reg_page  = pms_get_page( 'register', true );
 				$lost_page = pms_get_page( 'lost-password', true );
-				if ( ! empty( $reg_page ) ) {
-					$register_url = $reg_page;
-				}
 				if ( ! empty( $lost_page ) ) {
 					$lost_url = $lost_page;
 				}
@@ -59,7 +55,7 @@ wp_enqueue_style(
 				<?php
 				// block="true" ensures the form is shown even when the user is logged-in.
 				// Styling is applied via page-scoped CSS.
-				echo do_shortcode( '[pms-login block="true" redirect_url="' . esc_url_raw( home_url( '/fanclub/' ) ) . '" logout_redirect_url="' . esc_url_raw( home_url( '/fc-entry/login/' ) ) . '" register_url="" lostpassword_url="" ]' );
+				echo do_shortcode( '[pms-login block="true" redirect_url="' . esc_url_raw( home_url( '/fanclub/' ) ) . '" logout_redirect_url="' . esc_url_raw( home_url( '/fanclub/login/' ) ) . '" register_url="" lostpassword_url="" ]' );
 				?>
 			</div>
 
