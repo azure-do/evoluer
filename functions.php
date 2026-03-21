@@ -13,6 +13,33 @@ remove_action('wp_head', 'adjacent_posts_rel_link', 10, 0);	// Display relationa
 remove_action('wp_head', 'wp_generator');					// Display the XHTML generator that is generated on the wp_head hook, WP version
 remove_action('wp_head', 'adjacent_posts_rel_link_wp_head', 10);
 
+// ファンクラブ用カスタム投稿タイプ（内部名）
+if ( ! defined( 'EVOLUER_PT_FANCLUB_NEWS' ) ) {
+	define( 'EVOLUER_PT_FANCLUB_NEWS', 'fcnews' );
+}
+if ( ! defined( 'EVOLUER_PT_FANCLUB_TICKET' ) ) {
+	define( 'EVOLUER_PT_FANCLUB_TICKET', 'ticket' );
+}
+
+/**
+ * fc-news / fc-ticket から fcnews / ticket へ DB を移行（1回のみ）。
+ */
+function evoluer_maybe_migrate_fanclub_cpt_slugs() {
+	$version = (int) get_option( 'evoluer_fanclub_cpt_slug_version', 0 );
+	if ( $version >= 2 ) {
+		return;
+	}
+	global $wpdb;
+	$wpdb->update( $wpdb->posts, array( 'post_type' => EVOLUER_PT_FANCLUB_NEWS ), array( 'post_type' => 'fc-news' ), array( '%s' ), array( '%s' ) );
+	$wpdb->update( $wpdb->posts, array( 'post_type' => EVOLUER_PT_FANCLUB_TICKET ), array( 'post_type' => 'fc-ticket' ), array( '%s' ), array( '%s' ) );
+	update_option( 'evoluer_fanclub_cpt_slug_version', 2 );
+	update_option( 'evoluer_flush_rewrite_rules_flag', '1' );
+}
+
+/**
+ * ファンクラブ CPT の /fanclub/{artist}/news|ticket|… リライト・リダイレクト。
+ */
+require_once get_template_directory() . '/inc/fanclub-cpt-rewrites.php';
 
 
 //************************************************
@@ -32,6 +59,223 @@ function page_is_ancestor_of($slug)
 		}
 	}
 	return $result;
+}
+
+
+//************************************************
+// ファンクラブ URL → fc-fanclub ターム（shibuki / yonekichi など）
+//************************************************
+/**
+ * Request path without subdirectory (e.g. evoluer/fanclub/shibuki/gallery → fanclub/shibuki/gallery).
+ *
+ * @return string
+ */
+function evoluer_get_fanclub_request_path() {
+	$path = trim( (string) parse_url( isset( $_SERVER['REQUEST_URI'] ) ? wp_unslash( $_SERVER['REQUEST_URI'] ) : '', PHP_URL_PATH ), '/' );
+	$site_path = trim( (string) parse_url( home_url( '/' ), PHP_URL_PATH ), '/' );
+	if ( $site_path !== '' && 0 === strpos( $path, $site_path . '/' ) ) {
+		$path = trim( substr( $path, strlen( $site_path ) ), '/' );
+	}
+	return $path;
+}
+
+/**
+ * Map artist segment in URL to fc-fanclub term slug (fanclub_a / fanclub_b).
+ * Filter: evoluer_fanclub_artist_slug_to_term
+ *
+ * @return string 'fanclub_a'|'fanclub_b'
+ */
+function evoluer_fanclub_term_slug_for_request() {
+	$map = apply_filters(
+		'evoluer_fanclub_artist_slug_to_term',
+		array(
+			'shibuki'   => 'fanclub_a',
+			'yonekichi' => 'fanclub_b',
+		)
+	);
+
+	$path  = evoluer_get_fanclub_request_path();
+	$parts = array_values( array_filter( explode( '/', $path ) ) );
+
+	// /fanclub/shibuki/gallery/ …
+	if ( isset( $parts[0], $parts[1] ) && 'fanclub' === $parts[0] && isset( $map[ $parts[1] ] ) ) {
+		return $map[ $parts[1] ];
+	}
+
+	// /shibuki/ … (no fanclub prefix)
+	if ( isset( $parts[0] ) && isset( $map[ $parts[0] ] ) ) {
+		return $map[ $parts[0] ];
+	}
+
+	// Fallback: EFM page IDs (legacy hub pages)
+	if ( is_page() ) {
+		$pid         = (int) get_queried_object_id();
+		$fanclub_a_id = (int) get_option( 'efm_page_fanclub_a_id', 0 );
+		$fanclub_b_id = (int) get_option( 'efm_page_fanclub_b_id', 0 );
+		if ( $pid > 0 && $fanclub_b_id > 0 && $pid === $fanclub_b_id ) {
+			return 'fanclub_b';
+		}
+		if ( $pid > 0 && $fanclub_a_id > 0 && $pid === $fanclub_a_id ) {
+			return 'fanclub_a';
+		}
+	}
+
+	$user = wp_get_current_user();
+	if ( $user && $user->exists() && in_array( 'fanclub_b', (array) $user->roles, true ) ) {
+		return 'fanclub_b';
+	}
+
+	return 'fanclub_a';
+}
+
+/**
+ * Base URL for current artist hub (e.g. /fanclub/shibuki/) for "もっと見る" links.
+ *
+ * @return string Trailing slash URL.
+ */
+function evoluer_fanclub_artist_base_url() {
+	$map = apply_filters(
+		'evoluer_fanclub_artist_slug_to_term',
+		array(
+			'shibuki'   => 'fanclub_a',
+			'yonekichi' => 'fanclub_b',
+		)
+	);
+
+	$path  = evoluer_get_fanclub_request_path();
+	$parts = array_values( array_filter( explode( '/', $path ) ) );
+
+	if ( isset( $parts[0], $parts[1] ) && 'fanclub' === $parts[0] && isset( $map[ $parts[1] ] ) ) {
+		return trailingslashit( home_url( '/fanclub/' . $parts[1] ) );
+	}
+
+	if ( isset( $parts[0] ) && isset( $map[ $parts[0] ] ) ) {
+		return trailingslashit( home_url( '/fanclub/' . $parts[0] ) );
+	}
+
+	if ( is_page() ) {
+		$pid         = (int) get_queried_object_id();
+		$fanclub_a_id = (int) get_option( 'efm_page_fanclub_a_id', 0 );
+		$fanclub_b_id = (int) get_option( 'efm_page_fanclub_b_id', 0 );
+		if ( $pid > 0 && $fanclub_b_id > 0 && $pid === $fanclub_b_id ) {
+			return trailingslashit( home_url( '/fanclub/yonekichi/' ) );
+		}
+		if ( $pid > 0 && $fanclub_a_id > 0 && $pid === $fanclub_a_id ) {
+			return trailingslashit( home_url( '/fanclub/shibuki/' ) );
+		}
+	}
+
+	$user = wp_get_current_user();
+	if ( $user && $user->exists() && in_array( 'fanclub_b', (array) $user->roles, true ) ) {
+		return trailingslashit( home_url( '/fanclub/yonekichi/' ) );
+	}
+
+	return trailingslashit( home_url( '/fanclub/shibuki/' ) );
+}
+
+/**
+ * 会員エリア表示名（EFM 会員番号 000001様）。プラグイン未使用時は表示名。
+ *
+ * @return string
+ */
+function evoluer_fanclub_member_display_sama() {
+	if ( ! is_user_logged_in() ) {
+		return 'Member';
+	}
+	if ( ! class_exists( 'EFM_Membership' ) ) {
+		$u = wp_get_current_user();
+
+		return $u && $u->exists() ? $u->display_name : 'Member';
+	}
+
+	$term = function_exists( 'evoluer_fanclub_term_slug_for_request' ) ? evoluer_fanclub_term_slug_for_request() : 'fanclub_a';
+	$plan = EFM_Membership::plan_type_from_fanclub_term_slug( $term );
+	$row  = EFM_Membership::get_active_member_row_for_plan( get_current_user_id(), $plan );
+	if ( ! $row ) {
+		$row = EFM_Membership::get_any_active_member_row( get_current_user_id() );
+	}
+	if ( $row ) {
+		return EFM_Membership::format_member_number_sama( (int) $row->id );
+	}
+
+	$u = wp_get_current_user();
+
+	return $u && $u->exists() ? $u->display_name : 'Member';
+}
+
+/**
+ * 有効期限の残り日数が 0〜30 日のときのみ「会員期間は今後X日…」を返す。
+ *
+ * @return string HTML（空文字のときは非表示）。
+ */
+function evoluer_fanclub_member_period_notice_html() {
+	if ( ! is_user_logged_in() || ! class_exists( 'EFM_Membership' ) ) {
+		return '';
+	}
+
+	$term = function_exists( 'evoluer_fanclub_term_slug_for_request' ) ? evoluer_fanclub_term_slug_for_request() : 'fanclub_a';
+	$plan = EFM_Membership::plan_type_from_fanclub_term_slug( $term );
+	$row  = EFM_Membership::get_active_member_row_for_plan( get_current_user_id(), $plan );
+	if ( ! $row ) {
+		$row = EFM_Membership::get_any_active_member_row( get_current_user_id() );
+	}
+	if ( ! $row || empty( $row->payment_end ) ) {
+		return '';
+	}
+
+	$end = strtotime( $row->payment_end );
+	if ( ! $end ) {
+		return '';
+	}
+
+	$days_left = (int) floor( ( $end - time() ) / DAY_IN_SECONDS );
+	if ( $days_left < 0 || $days_left > 30 ) {
+		return '';
+	}
+
+	$days_show = max( 0, $days_left );
+
+	return '<p class="text-[#7A7A7A] text-[14px] md:text-[16px] mb-[26px]">会員期間は今後' . esc_html( (string) $days_show ) . '日残りしました。</p>';
+}
+
+/**
+ * ファンクラブ NEWS アーカイブ URL（/fanclub/{artist}/news/ … 現在のアーティスト文脈に合わせる）。
+ *
+ * @return string
+ */
+function evoluer_fanclub_fcnews_archive_url() {
+	$base = untrailingslashit( evoluer_fanclub_artist_base_url() );
+
+	return trailingslashit( $base . '/news' );
+}
+
+/**
+ * ファンクラブ Ticket アーカイブ URL（/fanclub/{artist}/ticket/）。
+ *
+ * @return string
+ */
+function evoluer_fanclub_ticket_archive_url() {
+	$base = untrailingslashit( evoluer_fanclub_artist_base_url() );
+
+	return trailingslashit( $base . '/ticket' );
+}
+
+/**
+ * NEWS 一覧へ（アーカイブ fcnews）。
+ *
+ * @return string
+ */
+function evoluer_fanclub_news_list_url() {
+	return evoluer_fanclub_fcnews_archive_url();
+}
+
+/**
+ * Ticket 一覧へ（アーカイブ ticket）。
+ *
+ * @return string
+ */
+function evoluer_fanclub_ticket_list_url() {
+	return evoluer_fanclub_ticket_archive_url();
 }
 
 
@@ -123,6 +367,8 @@ add_filter('style_loader_src', 'remove_cssjs_ver', 10, 2);
 //************************************************
 function custom_post_types()
 {
+	evoluer_maybe_migrate_fanclub_cpt_slugs();
+
 	$label    = 'タレント';
 	$slug_a   = 'artist';
 	$option_a = array(
@@ -195,7 +441,7 @@ function custom_post_types()
 	register_post_type($slug_n, $option_n);
 
 	$label    = 'ファンクラブ・新着情報';
-	$slug_nf   = 'fc-news';
+	$slug_nf   = EVOLUER_PT_FANCLUB_NEWS;
 	$option_nf = array(
 		'label'  => $label,
 		'labels' => array(
@@ -305,7 +551,7 @@ function custom_post_types()
 	register_post_type($slug_nf, $option_nf);
 
 	$label    = 'ファンクラブ・チケット';
-	$slug_nf   = 'fc-ticket';
+	$slug_nf   = EVOLUER_PT_FANCLUB_TICKET;
 	$option_nf = array(
 		'label'  => $label,
 		'labels' => array(
@@ -340,7 +586,7 @@ function custom_post_types()
 	);
 	register_post_type($slug_nf, $option_nf);
 
-	// ファンクラブ種別（Fanclub A/B）カテゴリ：fc-news 投稿をA/Bで振り分ける
+	// ファンクラブ種別（Fanclub A/B）カテゴリ：fcnews 等をA/Bで振り分ける
 	$tax_label = 'ファンクラブ カテゴリー';
 	$tax_slug  = 'fc-fanclub';
 	$args_tf   = array(
@@ -366,7 +612,7 @@ function custom_post_types()
 		),
 	);
 	// Bind this taxonomy to fanclub news/gallery/movie/ticket post types.
-	register_taxonomy($tax_slug, array('fc-news', 'fc-gallery', 'fc-movie', 'fc-ticket'), $args_tf);
+	register_taxonomy($tax_slug, array( EVOLUER_PT_FANCLUB_NEWS, 'fc-gallery', 'fc-movie', EVOLUER_PT_FANCLUB_TICKET ), $args_tf);
 
 	// Create Fanclub A/B terms if they don't exist yet.
 	$term_a = term_exists('fanclub_a', $tax_slug);
@@ -461,7 +707,32 @@ function custom_post_types()
 	);
 	register_taxonomy('schedule-cat', $slug_s, $args_s_c);
 }
-add_action('init', 'custom_post_types');
+add_action( 'init', 'custom_post_types' );
+
+/** スラッグ変更後にリライトルールを再生成 */
+add_action(
+	'init',
+	static function () {
+		if ( get_option( 'evoluer_flush_rewrite_rules_flag' ) ) {
+			flush_rewrite_rules( false );
+			delete_option( 'evoluer_flush_rewrite_rules_flag' );
+		}
+	},
+	99
+);
+
+/** ファンクラブ NEWS / Ticket アーカイブの表示件数 */
+add_action(
+	'pre_get_posts',
+	static function ( $query ) {
+		if ( is_admin() || ! $query->is_main_query() ) {
+			return;
+		}
+		if ( $query->is_post_type_archive( array( EVOLUER_PT_FANCLUB_NEWS, EVOLUER_PT_FANCLUB_TICKET ) ) ) {
+			$query->set( 'posts_per_page', 20 );
+		}
+	}
+);
 
 // If /fc-entry/* incorrectly resolves to the homepage, force the main query
 // to the matching Page so it renders the correct template (no redirect loops).
@@ -591,6 +862,10 @@ function change_default_title($title)
 		$title = '新着情報のタイトルを入力';
 	} elseif ($screen->post_type == 'schedule') {	//カスタム投稿タイプ：schedule
 		$title = '出演情報のタイトルを入力';
+	} elseif ( defined( 'EVOLUER_PT_FANCLUB_NEWS' ) && $screen->post_type === EVOLUER_PT_FANCLUB_NEWS ) {
+		$title = 'ファンクラブ新着情報のタイトルを入力';
+	} elseif ( defined( 'EVOLUER_PT_FANCLUB_TICKET' ) && $screen->post_type === EVOLUER_PT_FANCLUB_TICKET ) {
+		$title = 'ファンクラブチケットのタイトルを入力';
 	}
 	return $title;
 }
@@ -608,10 +883,10 @@ function my_custom_menu_order($menu_order)
 		'edit.php?post_type=artist',			//カスタムポスト
 		'edit.php?post_type=news',				//カスタムポスト
 		'edit.php?post_type=schedule',			//カスタムポスト
-		'edit.php?post_type=fc-news',			//ファンクラブ新着情報
+		'edit.php?post_type=' . EVOLUER_PT_FANCLUB_NEWS,			//ファンクラブ新着情報
 		'edit.php?post_type=fc-gallery',		//ファンクラブ画廊
 		'edit.php?post_type=fc-movie',			//ファンクラブ動画
-		'edit.php?post_type=fc-ticket',			//ファンクラブチケット
+		'edit.php?post_type=' . EVOLUER_PT_FANCLUB_TICKET,			//ファンクラブチケット
 		'separator1',							//区切り線1
 		'edit.php?post_type=page',				//固定ページ
 		'upload.php', 							//メディア

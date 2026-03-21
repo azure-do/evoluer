@@ -7,8 +7,8 @@ Template Name: Fanclub (Member) - Movie
 <?php
 get_header('fanclub-member');
 
-$current_user      = wp_get_current_user();
-$fanclub_term_slug = ( $current_user && in_array( 'fanclub_b', (array) $current_user->roles, true ) ) ? 'fanclub_b' : 'fanclub_a';
+// URL /fanclub/shibuki/movie/ → fanclub_a, /fanclub/yonekichi/movie/ → fanclub_b.
+$fanclub_term_slug = function_exists( 'evoluer_fanclub_term_slug_for_request' ) ? evoluer_fanclub_term_slug_for_request() : 'fanclub_a';
 $movie_items       = array();
 $movie_query       = new WP_Query(
 	array(
@@ -79,9 +79,11 @@ if ( $movie_query->have_posts() ) {
 
 <main id="container" class="bg-[#DDE4DE] pb-[20px] md:pb-[30px] xl:pb-[40px]">
 	<div class="w-full max-w-[1130px] mx-auto px-[30px]">
-		<p class="text-[#7A7A7A] text-[14px] md:text-[16px] mb-[26px]">
-			会員期間は今後27日残りしました。
-		</p>
+		<?php
+		if ( function_exists( 'evoluer_fanclub_member_period_notice_html' ) ) {
+			echo evoluer_fanclub_member_period_notice_html(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		}
+		?>
 	</div>
 
 	<section class="w-full pt-[60px] pb-[80px]">

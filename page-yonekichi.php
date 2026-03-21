@@ -7,23 +7,13 @@ Template Name: Fanclub (Member) - Fanclub 1
 <?php get_header('fanclub-member'); ?>
 
 <?php
-// NOTE: Placeholder content for now. Duplicate this page for Fanclub A/B and replace arrays/HTML later.
-$member_note = '会員期間は今後27日残りしました。';
-
-// Fetch fc-news posts for current Fanclub page (A/B).
-$fanclub_term_slug = 'fanclub_a';
-$queried_page_id   = (int) get_queried_object_id();
-$fanclub_a_page_id = (int) get_option('efm_page_fanclub_a_id', 0);
-$fanclub_b_page_id = (int) get_option('efm_page_fanclub_b_id', 0);
-
-if (0 !== $queried_page_id && $queried_page_id === $fanclub_b_page_id) {
-	$fanclub_term_slug = 'fanclub_b';
-}
+// Fetch fc-news posts for current Fanclub (URL /fanclub/yonekichi/ … → fanclub_b, etc.).
+$fanclub_term_slug = function_exists( 'evoluer_fanclub_term_slug_for_request' ) ? evoluer_fanclub_term_slug_for_request() : 'fanclub_a';
 
 $news_items = array();
 $news_query = new WP_Query(
 	array(
-		'post_type'      => 'fc-news',
+		'post_type'      => EVOLUER_PT_FANCLUB_NEWS,
 		'posts_per_page' => 4,
 		'orderby'        => 'date',
 		'order'          => 'DESC',
@@ -190,7 +180,7 @@ if ( $movie_query->have_posts() ) {
 $ticket_items  = array();
 $ticket_query = new WP_Query(
 	array(
-		'post_type'      => 'fc-ticket',
+		'post_type'      => EVOLUER_PT_FANCLUB_TICKET,
 		'posts_per_page' => 6,
 		'orderby'        => 'date',
 		'order'          => 'DESC',
@@ -209,11 +199,11 @@ if ( $ticket_query->have_posts() ) {
 	while ( $ticket_query->have_posts() ) {
 		$ticket_query->the_post();
 		$post_id = get_the_ID();
-		$content = trim( (string) get_post_field( 'post_content', $post_id ) );
 
 		$ticket_items[] = array(
-			'title'   => get_the_title( $post_id ),
-			'content' => $content !== '' ? apply_filters( 'the_content', $content ) : '',
+			'title' => get_the_title( $post_id ),
+			'url'   => get_permalink( $post_id ),
+			'date'  => get_the_date( 'Y/m/d', $post_id ),
 		);
 	}
 	wp_reset_postdata();
@@ -222,9 +212,11 @@ if ( $ticket_query->have_posts() ) {
 
 <main id="container" class="bg-[#DDE4DE] pb-[20px] md:pb-[30px] xl:pb-[40px]">
 	<div class="w-full max-w-[1130px] mx-auto px-[30px]">
-		<p class="text-[#CC6868] text-[14px] md:text-[16px] mb-[26px]">
-			<?php echo esc_html($member_note); ?>
-		</p>
+		<?php
+		if ( function_exists( 'evoluer_fanclub_member_period_notice_html' ) ) {
+			echo evoluer_fanclub_member_period_notice_html(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in helper
+		}
+		?>
 	</div>
 	<section class="w-full max-w-[1130px] mx-auto px-[30px] pt-[60px] xl:pt-[100px] pb-[28px]">
 		<div class="relative mb-[32px] xl:mb-[60px]">
@@ -265,7 +257,7 @@ if ( $ticket_query->have_posts() ) {
 		</div>
 
 		<div class="flex justify-center mt-[28px] md:mt-[40px] xl:mt-[54px]">
-			<a href="#" class="inline-flex items-center gap-[10px] px-[30px] xl:px-[70px] py-[10px] border border-[#13AA05] !text-[#13AA05] text-[14px] rounded-[2px]">
+			<a href="<?php echo esc_url( function_exists( 'evoluer_fanclub_fcnews_archive_url' ) ? evoluer_fanclub_fcnews_archive_url() : home_url( '/fcnews/' ) ); ?>" class="inline-flex items-center gap-[10px] px-[30px] xl:px-[70px] py-[10px] border border-[#13AA05] !text-[#13AA05] text-[14px] rounded-[2px]">
 				<span class="font-bold">>></span>
 				<span>もっと見る</span>
 			</a>
@@ -346,16 +338,12 @@ if ( $ticket_query->have_posts() ) {
 			<?php if ( ! empty($ticket_items) ) : ?>
 				<div class="bg-transparent overflow-hidden mt-[30px]">
 					<?php foreach ($ticket_items as $t) : ?>
-						<div class="px-[4px] md:px-[8px] xl:px-[22px] py-[12px] md:pt-[18px] md:pb-[20px] xl:pt-[18px] xl:pb-[20px] border-b border-[#ffffff5c] ">
-							<p class="text-[#222] text-[14px] lg:text-[14px] xl:text-[16px] leading-relaxed font-semibold">
+						<a href="<?php echo esc_url( $t['url'] ); ?>" class="group block px-[4px] md:px-[8px] xl:px-[22px] py-[12px] md:pt-[18px] md:pb-[20px] xl:pt-[18px] xl:pb-[20px] border-b border-[#ffffff5c] transition-colors hover:bg-white/10">
+							<span class="text-[#525252] text-[14px] font-semibold block"><?php echo esc_html( $t['date'] ); ?></span>
+							<p class="text-[#222] text-[14px] lg:text-[14px] xl:text-[16px] leading-relaxed font-semibold mt-[6px] group-hover:underline">
 								<?php echo esc_html($t['title']); ?>
 							</p>
-							<?php if ( ! empty($t['content']) ) : ?>
-								<div class="mt-[8px] text-[#222] text-[13px] md:text-[15px] leading-relaxed">
-									<?php echo $t['content']; ?>
-								</div>
-							<?php endif; ?>
-						</div>
+						</a>
 					<?php endforeach; ?>
 				</div>
 			<?php else : ?>
@@ -363,7 +351,7 @@ if ( $ticket_query->have_posts() ) {
 			<?php endif; ?>
 
 			<div class="flex justify-center mt-[26px] md:mt-[40px] xl:mt-[54px]">
-				<a href="#" class="inline-flex items-center gap-[10px] px-[30px] xl:px-[70px] py-[10px] border border-[#13AA05] !text-[#13AA05] text-[14px] rounded-[2px]">
+				<a href="<?php echo esc_url( function_exists( 'evoluer_fanclub_ticket_list_url' ) ? evoluer_fanclub_ticket_list_url() : home_url( '/ticket/' ) ); ?>" class="inline-flex items-center gap-[10px] px-[30px] xl:px-[70px] py-[10px] border border-[#13AA05] !text-[#13AA05] text-[14px] rounded-[2px]">
 					<span class="font-bold">>></span>
 					<span>もっと見る</span>
 				</a>

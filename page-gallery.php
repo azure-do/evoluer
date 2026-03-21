@@ -7,8 +7,8 @@ Template Name: Fanclub (Member) - Gallery
 <?php
 get_header('fanclub-member');
 
-$current_user      = wp_get_current_user();
-$fanclub_term_slug = ( $current_user && in_array( 'fanclub_b', (array) $current_user->roles, true ) ) ? 'fanclub_b' : 'fanclub_a';
+// URL /fanclub/shibuki/gallery/ → fanclub_a, /fanclub/yonekichi/gallery/ → fanclub_b (see evoluer_fanclub_term_slug_for_request).
+$fanclub_term_slug = function_exists( 'evoluer_fanclub_term_slug_for_request' ) ? evoluer_fanclub_term_slug_for_request() : 'fanclub_a';
 $gallery_items     = array();
 $gallery_query     = new WP_Query(
 	array(
@@ -63,9 +63,11 @@ if ( $gallery_query->have_posts() ) {
 
 <main id="container" class="bg-[#DDE4DE] pb-[20px] md:pb-[30px] xl:pb-[40px]">
 	<div class="w-full max-w-[1130px] mx-auto px-[30px]">
-		<p class="text-[#7A7A7A] text-[14px] md:text-[16px] mb-[26px]">
-			会員期間は今後27日残りしました。
-		</p>
+		<?php
+		if ( function_exists( 'evoluer_fanclub_member_period_notice_html' ) ) {
+			echo evoluer_fanclub_member_period_notice_html(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		}
+		?>
 	</div>
 
 	<section class="w-full pt-[60px] pb-[80px]">
@@ -88,11 +90,13 @@ if ( $gallery_query->have_posts() ) {
 					<?php endforeach; ?>
 				</div>
 				<div class="flex justify-center mt-[28px] md:mt-[40px] xl:mt-[54px]">
-					<a href="<?php echo home_url('/fanclub/shibuki/'); ?>" class="inline-flex items-center gap-[10px] px-[30px] xl:px-[70px] py-[10px] border border-[#13AA05] !text-[#13AA05] text-[14px] rounded-[2px]">
+					<a href="<?php echo esc_url( function_exists( 'evoluer_fanclub_artist_base_url' ) ? evoluer_fanclub_artist_base_url() : home_url( '/fanclub/' ) ); ?>" class="inline-flex items-center gap-[10px] px-[30px] xl:px-[70px] py-[10px] border border-[#13AA05] !text-[#13AA05] text-[14px] rounded-[2px]">
 						<span class="font-bold">›</span>
 						<span>もっと見る</span>
 					</a>
 				</div>
+			<?php else : ?>
+				<p class="text-center text-[#666] text-[14px] md:text-[16px]">ギャラリーはまだありません。</p>
 			<?php endif; ?>
 		</div>
 	</section>

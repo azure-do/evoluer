@@ -62,10 +62,10 @@
             中村米吉<br>official fan club
           </h3>
           <ul class="space-y-3 text-[16px]">
-            <li><a href="<?php echo esc_url(home_url('/news/')); ?>">NEWS</a></li>
+            <li><a href="<?php echo esc_url( function_exists( 'evoluer_fanclub_fcnews_archive_url' ) ? evoluer_fanclub_fcnews_archive_url() : home_url( '/fcnews/' ) ); ?>">NEWS</a></li>
             <li><a href="<?php echo esc_url(home_url('/gallery/')); ?>">GALLERY</a></li>
             <li><a href="<?php echo esc_url(home_url('/movie/')); ?>">Movie</a></li>
-            <li><a href="<?php echo esc_url(home_url('/ticket/')); ?>">Ticket</a></li>
+            <li><a href="<?php echo esc_url( function_exists( 'evoluer_fanclub_ticket_archive_url' ) ? evoluer_fanclub_ticket_archive_url() : home_url( '/ticket/' ) ); ?>">Ticket</a></li>
             <li><a href="<?php echo esc_url(home_url('/contact/')); ?>">Contact US</a></li>
           </ul>
         </div>
@@ -76,10 +76,10 @@
             中村米吉<br>official fan club
           </h3>
           <ul class="space-y-3 text-[16px]">
-            <li><a href="<?php echo esc_url(home_url('/news/')); ?>">NEWS</a></li>
+            <li><a href="<?php echo esc_url( function_exists( 'evoluer_fanclub_fcnews_archive_url' ) ? evoluer_fanclub_fcnews_archive_url() : home_url( '/fcnews/' ) ); ?>">NEWS</a></li>
             <li><a href="<?php echo esc_url(home_url('/gallery/')); ?>">GALLERY</a></li>
             <li><a href="<?php echo esc_url(home_url('/movie/')); ?>">Movie</a></li>
-            <li><a href="<?php echo esc_url(home_url('/ticket/')); ?>">Ticket</a></li>
+            <li><a href="<?php echo esc_url( function_exists( 'evoluer_fanclub_ticket_archive_url' ) ? evoluer_fanclub_ticket_archive_url() : home_url( '/ticket/' ) ); ?>">Ticket</a></li>
             <li><a href="<?php echo esc_url(home_url('/contact/')); ?>">Contact US</a></li>
           </ul>
         </div>

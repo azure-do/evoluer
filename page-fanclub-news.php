@@ -10,17 +10,14 @@ Template Name: Fanclub (Member) - News FV
 // For now this is a placeholder. When you duplicate this page for Fanclub A/B,
 // you can switch content here (or replace with real WP queries later).
 $plan_label = '中村米吉official fan club';
-$member_note = '会員期間は今後27日残りしました。';
 
 // Fetch fc-news posts for the logged-in Fanclub (A/B).
-// We use user role because /news/ page can be shared by both types.
-$current_user      = wp_get_current_user();
-$fanclub_term_slug = ( $current_user && in_array( 'fanclub_b', (array) $current_user->roles, true ) ) ? 'fanclub_b' : 'fanclub_a';
+$fanclub_term_slug = function_exists( 'evoluer_fanclub_term_slug_for_request' ) ? evoluer_fanclub_term_slug_for_request() : 'fanclub_a';
 
 $news_items = array();
 $news_query = new WP_Query(
 	array(
-		'post_type'      => 'fc-news',
+		'post_type'      => EVOLUER_PT_FANCLUB_NEWS,
 		'posts_per_page' => 4,
 		'orderby'        => 'date',
 		'order'          => 'DESC',
@@ -70,9 +67,11 @@ if ($news_query->have_posts()) {
 
 <main id="container" class="bg-[#DDE4DE]">
 	<section class="w-full max-w-[1130px] mx-auto px-[30px] pt-[60px] pb-[80px]">
-		<p class="text-[#7A7A7A] text-[14px] md:text-[16px] mb-[26px]">
-			<?php echo esc_html($member_note); ?>
-		</p>
+		<?php
+		if ( function_exists( 'evoluer_fanclub_member_period_notice_html' ) ) {
+			echo evoluer_fanclub_member_period_notice_html(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		}
+		?>
 
 		<h2 class="text-center text-[#9DB03F] font-bold tracking-[0.45em] text-[34px] md:text-[40px] mb-[22px] en-font">
 			<span class="inline-block">N</span>&nbsp;<span class="inline-block">E</span>&nbsp;<span class="inline-block">W</span>&nbsp;<span class="inline-block">S</span>
@@ -115,7 +114,7 @@ if ($news_query->have_posts()) {
 
 		<div class="flex justify-center mt-[28px]">
 			<a
-				href="#"
+				href="<?php echo esc_url( function_exists( 'evoluer_fanclub_fcnews_archive_url' ) ? evoluer_fanclub_fcnews_archive_url() : home_url( '/fcnews/' ) ); ?>"
 				class="inline-flex items-center gap-[10px] px-[30px] py-[10px] border border-[#B5C86D] text-[#B5C86D] text-[14px] rounded-[2px] bg-white">
 				<span class="font-bold">››</span>
 				<span>もっと見る</span>

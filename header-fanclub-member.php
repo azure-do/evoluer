@@ -8,11 +8,9 @@ if (! defined('ABSPATH')) {
 	exit;
 }
 
-$current_user = wp_get_current_user();
-$member_name  = ($current_user && $current_user->exists()) ? $current_user->display_name : '';
-if ($member_name === '') {
-	$member_name = 'Member';
-}
+$member_name = function_exists( 'evoluer_fanclub_member_display_sama' )
+	? evoluer_fanclub_member_display_sama()
+	: ( ( $current_user = wp_get_current_user() ) && $current_user->exists() ? $current_user->display_name : 'Member' );
 
 $logout_url = wp_logout_url(home_url('/fanclub/login/'));
 ?>
@@ -42,7 +40,7 @@ $logout_url = wp_logout_url(home_url('/fanclub/login/'));
 							<a href="<?php echo esc_url(home_url('/fanclub/')); ?>" class="header_list_item text-center en-font px-[8px] xl:px-[16px] text-[16px] no-underline text-inherit inline-block">TOP</a>
 						</li>
 						<li>
-							<a href="<?php echo esc_url(home_url('/news/')); ?>" class="header_list_item text-center en-font px-[8px] xl:px-[16px] text-[16px] underline text-inherit inline-block">News</a>
+							<a href="<?php echo esc_url( function_exists( 'evoluer_fanclub_fcnews_archive_url' ) ? evoluer_fanclub_fcnews_archive_url() : home_url( '/fcnews/' ) ); ?>" class="header_list_item text-center en-font px-[8px] xl:px-[16px] text-[16px] underline text-inherit inline-block">News</a>
 						</li>
 						<li>
 							<a href="<?php echo esc_url(home_url('/gallery/')); ?>" class="header_list_item text-center en-font px-[8px] xl:px-[16px] text-[16px] underline text-inherit inline-block">Gallery</a>
@@ -51,7 +49,7 @@ $logout_url = wp_logout_url(home_url('/fanclub/login/'));
 							<a href="<?php echo esc_url(home_url('/movie/')); ?>" class="header_list_item text-center en-font px-[8px] xl:px-[16px] text-[16px] underline text-inherit inline-block">Movie</a>
 						</li>
 						<li>
-							<a href="<?php echo esc_url(home_url('/ticket/')); ?>" class="header_list_item text-center en-font px-[8px] xl:px-[16px] text-[16px] underline text-inherit inline-block">Ticket</a>
+							<a href="<?php echo esc_url( function_exists( 'evoluer_fanclub_ticket_archive_url' ) ? evoluer_fanclub_ticket_archive_url() : home_url( '/ticket/' ) ); ?>" class="header_list_item text-center en-font px-[8px] xl:px-[16px] text-[16px] underline text-inherit inline-block">Ticket</a>
 						</li>
 						<li>
 							<a href="<?php echo esc_url(home_url('/contact/')); ?>" class="header_list_item text-center en-font px-[8px] xl:px-[16px] text-[16px] underline text-inherit inline-block">Contact US</a>
@@ -62,7 +60,7 @@ $logout_url = wp_logout_url(home_url('/fanclub/login/'));
 									<circle cx="12" cy="8" r="3.2"></circle>
 									<path d="M5 19c.7-3.1 2.9-4.8 7-4.8s6.3 1.7 7 4.8"></path>
 								</svg>
-								<span class="en-font text-[16px] text-[#333] leading-none max-w-[min(160px,18vw)] truncate"><?php echo esc_html($member_name); ?><span class="text-[14px] font-medium not-italic"> 様</span></span>
+								<span class="en-font text-[16px] text-[#333] leading-none max-w-[min(200px,22vw)] truncate"><?php echo esc_html( $member_name ); ?></span>
 							</span>
 						</li>
 						<li class="flex items-center">

@@ -7,8 +7,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-$current_user = wp_get_current_user();
-$member_name  = ( $current_user && $current_user->exists() ) ? $current_user->display_name : '123456 様';
+$member_name = function_exists( 'evoluer_fanclub_member_display_sama' )
+	? evoluer_fanclub_member_display_sama()
+	: ( ( $current_user = wp_get_current_user() ) && $current_user->exists() ? $current_user->display_name : 'Member' );
 ?>
 
 <header class="w-full bg-white border-b border-[#EAEAEA]">
@@ -27,10 +28,10 @@ $member_name  = ( $current_user && $current_user->exists() ) ? $current_user->di
 			<nav class="hidden md:block">
 				<ul class="flex items-center gap-8 lg:gap-10 text-[18px] tracking-[0.01em] text-[#333333]">
 					<li><a href="<?php echo esc_url( home_url( '/fanclub/' ) ); ?>" class="no-underline text-inherit">TOP</a></li>
-					<li><a href="<?php echo esc_url( home_url( '/news/' ) ); ?>" class="no-underline text-inherit">NEWS</a></li>
+					<li><a href="<?php echo esc_url( function_exists( 'evoluer_fanclub_fcnews_archive_url' ) ? evoluer_fanclub_fcnews_archive_url() : home_url( '/fcnews/' ) ); ?>" class="no-underline text-inherit">NEWS</a></li>
 					<li><a href="<?php echo esc_url( home_url( '/gallery/' ) ); ?>" class="no-underline text-inherit">GALLERY</a></li>
 					<li><a href="<?php echo esc_url( home_url( '/movie/' ) ); ?>" class="no-underline text-inherit">Movie</a></li>
-					<li><a href="<?php echo esc_url( home_url( '/ticket/' ) ); ?>" class="no-underline text-inherit">Ticket</a></li>
+					<li><a href="<?php echo esc_url( function_exists( 'evoluer_fanclub_ticket_archive_url' ) ? evoluer_fanclub_ticket_archive_url() : home_url( '/ticket/' ) ); ?>" class="no-underline text-inherit">Ticket</a></li>
 					<li><a href="<?php echo esc_url( home_url( '/contact/' ) ); ?>" class="no-underline text-inherit">Contact US</a></li>
 				</ul>
 			</nav>

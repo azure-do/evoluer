@@ -5,14 +5,13 @@ Template Name: Fanclub (Member) - Ticket
 ?>
 
 <?php
-get_header('fanclub-member');
+get_header( 'fanclub-member' );
 
-$current_user      = wp_get_current_user();
-$fanclub_term_slug = ( $current_user && in_array( 'fanclub_b', (array) $current_user->roles, true ) ) ? 'fanclub_b' : 'fanclub_a';
+$fanclub_term_slug = function_exists( 'evoluer_fanclub_term_slug_for_request' ) ? evoluer_fanclub_term_slug_for_request() : 'fanclub_a';
 $ticket_items      = array();
 $ticket_query      = new WP_Query(
 	array(
-		'post_type'      => 'fc-ticket',
+		'post_type'      => EVOLUER_PT_FANCLUB_TICKET,
 		'posts_per_page' => 12,
 		'orderby'        => 'date',
 		'order'          => 'DESC',
@@ -31,11 +30,11 @@ if ( $ticket_query->have_posts() ) {
 	while ( $ticket_query->have_posts() ) {
 		$ticket_query->the_post();
 		$post_id = get_the_ID();
-		$content = trim( (string) get_post_field( 'post_content', $post_id ) );
 
 		$ticket_items[] = array(
-			'title'   => get_the_title( $post_id ),
-			'content' => $content !== '' ? apply_filters( 'the_content', $content ) : '',
+			'title' => get_the_title( $post_id ),
+			'url'   => get_permalink( $post_id ),
+			'date'  => get_the_date( 'Y/m/d', $post_id ),
 		);
 	}
 	wp_reset_postdata();
@@ -44,9 +43,11 @@ if ( $ticket_query->have_posts() ) {
 
 <main id="container" class="bg-[#DDE4DE] pb-[20px] md:pb-[30px] xl:pb-[40px]">
 	<div class="w-full max-w-[1130px] mx-auto px-[30px]">
-		<p class="text-[#7A7A7A] text-[14px] md:text-[16px] mb-[26px]">
-			会員期間は今後27日残りしました。
-		</p>
+		<?php
+		if ( function_exists( 'evoluer_fanclub_member_period_notice_html' ) ) {
+			echo evoluer_fanclub_member_period_notice_html(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		}
+		?>
 	</div>
 
 	<section class="w-full pt-[60px] pb-[80px]">
@@ -60,16 +61,14 @@ if ( $ticket_query->have_posts() ) {
 			<?php if ( ! empty( $ticket_items ) ) : ?>
 				<div class="bg-transparent overflow-hidden mt-[30px]">
 					<?php foreach ( $ticket_items as $t ) : ?>
-						<div class="px-[4px] md:px-[8px] xl:px-[22px] py-[12px] md:pt-[18px] md:pb-[20px] xl:pt-[18px] xl:pb-[20px] border-b border-[#ffffff5c] ">
-							<p class="text-[#222] text-[14px] lg:text-[14px] xl:text-[16px] leading-relaxed font-semibold">
-								<?php echo esc_html( $t['title'] ); ?>
-							</p>
-							<?php if ( ! empty( $t['content'] ) ) : ?>
-								<div class="mt-[8px] text-[#222] text-[13px] md:text-[15px] leading-relaxed">
-									<?php echo $t['content']; ?>
-								</div>
-							<?php endif; ?>
-						</div>
+						<a href="<?php echo esc_url( $t['url'] ); ?>" class="group block border-b border-[#ffffff5c] px-[4px] md:px-[8px] xl:px-[22px] py-[12px] md:pt-[18px] md:pb-[20px] transition-colors hover:bg-white/10">
+							<div class="flex flex-col gap-[6px]">
+								<span class="text-[#525252] text-[14px] font-semibold"><?php echo esc_html( $t['date'] ); ?></span>
+								<p class="text-[#222] text-[14px] lg:text-[14px] xl:text-[16px] leading-relaxed font-semibold group-hover:underline">
+									<?php echo esc_html( $t['title'] ); ?>
+								</p>
+							</div>
+						</a>
 					<?php endforeach; ?>
 				</div>
 			<?php else : ?>
@@ -80,4 +79,3 @@ if ( $ticket_query->have_posts() ) {
 </main>
 
 <?php get_footer(); ?>
-
