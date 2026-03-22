@@ -207,8 +207,21 @@ add_action(
 			return;
 		}
 
-		// 単一投稿は name で取得するため tax_query を付けない（付けると取得に失敗する）。
-		if ( ! $query->is_post_type_archive() ) {
+		$post_type = $query->get( 'post_type' );
+		if ( is_array( $post_type ) ) {
+			$post_type = reset( $post_type );
+		}
+		if ( empty( $post_type ) ) {
+			return;
+		}
+
+		$fanclub_types = array( EVOLUER_PT_FANCLUB_TICKET, EVOLUER_PT_FANCLUB_NEWS, 'fc-movie', 'fc-gallery' );
+		if ( ! in_array( $post_type, $fanclub_types, true ) ) {
+			return;
+		}
+
+		// 単一投稿は `name` または `p` で取得。is_post_type_archive() は環境によって false のままのことがあるため明示判定する。
+		if ( (string) $query->get( 'name' ) !== '' || (int) $query->get( 'p' ) > 0 ) {
 			return;
 		}
 

@@ -43,10 +43,10 @@ $logout_url = wp_logout_url(home_url('/fanclub/login/'));
 							<a href="<?php echo esc_url( function_exists( 'evoluer_fanclub_fcnews_archive_url' ) ? evoluer_fanclub_fcnews_archive_url() : home_url( '/fcnews/' ) ); ?>" class="header_list_item text-center en-font px-[8px] xl:px-[16px] text-[16px] underline text-inherit inline-block">News</a>
 						</li>
 						<li>
-							<a href="<?php echo esc_url(home_url('/gallery/')); ?>" class="header_list_item text-center en-font px-[8px] xl:px-[16px] text-[16px] underline text-inherit inline-block">Gallery</a>
+							<a href="<?php echo esc_url( function_exists( 'evoluer_fanclub_fcgallery_archive_url' ) ? evoluer_fanclub_fcgallery_archive_url() : home_url( '/fc-gallery/' ) ); ?>" class="header_list_item text-center en-font px-[8px] xl:px-[16px] text-[16px] underline text-inherit inline-block">Gallery</a>
 						</li>
 						<li>
-							<a href="<?php echo esc_url(home_url('/movie/')); ?>" class="header_list_item text-center en-font px-[8px] xl:px-[16px] text-[16px] underline text-inherit inline-block">Movie</a>
+							<a href="<?php echo esc_url( function_exists( 'evoluer_fanclub_fc_movie_archive_url' ) ? evoluer_fanclub_fc_movie_archive_url() : home_url( '/fc-movie/' ) ); ?>" class="header_list_item text-center en-font px-[8px] xl:px-[16px] text-[16px] underline text-inherit inline-block">Movie</a>
 						</li>
 						<li>
 							<a href="<?php echo esc_url( function_exists( 'evoluer_fanclub_ticket_archive_url' ) ? evoluer_fanclub_ticket_archive_url() : home_url( '/ticket/' ) ); ?>" class="header_list_item text-center en-font px-[8px] xl:px-[16px] text-[16px] underline text-inherit inline-block">Ticket</a>

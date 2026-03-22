@@ -278,6 +278,28 @@ function evoluer_fanclub_ticket_list_url() {
 	return evoluer_fanclub_ticket_archive_url();
 }
 
+/**
+ * ファンクラブ Gallery アーカイブ URL（/fanclub/{artist}/gallery/）。
+ *
+ * @return string
+ */
+function evoluer_fanclub_fcgallery_archive_url() {
+	$base = untrailingslashit( evoluer_fanclub_artist_base_url() );
+
+	return trailingslashit( $base . '/gallery' );
+}
+
+/**
+ * ファンクラブ Movie アーカイブ URL（/fanclub/{artist}/movie/）。
+ *
+ * @return string
+ */
+function evoluer_fanclub_fc_movie_archive_url() {
+	$base = untrailingslashit( evoluer_fanclub_artist_base_url() );
+
+	return trailingslashit( $base . '/movie' );
+}
+
 
 //************************************************
 // スタイルシートとjsファイルの管理
@@ -721,16 +743,29 @@ add_action(
 	99
 );
 
-/** ファンクラブ NEWS / Ticket アーカイブの表示件数 */
+/** ファンクラブ NEWS / Ticket / Movie / Gallery アーカイブの表示件数（is_post_type_archive に依存しない） */
 add_action(
 	'pre_get_posts',
 	static function ( $query ) {
 		if ( is_admin() || ! $query->is_main_query() ) {
 			return;
 		}
-		if ( $query->is_post_type_archive( array( EVOLUER_PT_FANCLUB_NEWS, EVOLUER_PT_FANCLUB_TICKET ) ) ) {
-			$query->set( 'posts_per_page', 20 );
+		$post_type = $query->get( 'post_type' );
+		if ( is_array( $post_type ) ) {
+			$post_type = reset( $post_type );
 		}
+		if ( empty( $post_type ) ) {
+			return;
+		}
+		$fanclub_archives = array( EVOLUER_PT_FANCLUB_NEWS, EVOLUER_PT_FANCLUB_TICKET, 'fc-movie', 'fc-gallery' );
+		if ( ! in_array( $post_type, $fanclub_archives, true ) ) {
+			return;
+		}
+		// 単一投稿は除外（/fanclub/.../news/slug/ など）。
+		if ( (string) $query->get( 'name' ) !== '' || (int) $query->get( 'p' ) > 0 ) {
+			return;
+		}
+		$query->set( 'posts_per_page', 20 );
 	}
 );
 

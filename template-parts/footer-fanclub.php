@@ -63,8 +63,8 @@
           </h3>
           <ul class="space-y-3 text-[16px]">
             <li><a href="<?php echo esc_url( function_exists( 'evoluer_fanclub_fcnews_archive_url' ) ? evoluer_fanclub_fcnews_archive_url() : home_url( '/fcnews/' ) ); ?>">NEWS</a></li>
-            <li><a href="<?php echo esc_url(home_url('/gallery/')); ?>">GALLERY</a></li>
-            <li><a href="<?php echo esc_url(home_url('/movie/')); ?>">Movie</a></li>
+            <li><a href="<?php echo esc_url( function_exists( 'evoluer_fanclub_fcgallery_archive_url' ) ? evoluer_fanclub_fcgallery_archive_url() : home_url( '/fc-gallery/' ) ); ?>">GALLERY</a></li>
+            <li><a href="<?php echo esc_url( function_exists( 'evoluer_fanclub_fc_movie_archive_url' ) ? evoluer_fanclub_fc_movie_archive_url() : home_url( '/fc-movie/' ) ); ?>">Movie</a></li>
             <li><a href="<?php echo esc_url( function_exists( 'evoluer_fanclub_ticket_archive_url' ) ? evoluer_fanclub_ticket_archive_url() : home_url( '/ticket/' ) ); ?>">Ticket</a></li>
             <li><a href="<?php echo esc_url(home_url('/contact/')); ?>">Contact US</a></li>
           </ul>
@@ -77,8 +77,8 @@
           </h3>
           <ul class="space-y-3 text-[16px]">
             <li><a href="<?php echo esc_url( function_exists( 'evoluer_fanclub_fcnews_archive_url' ) ? evoluer_fanclub_fcnews_archive_url() : home_url( '/fcnews/' ) ); ?>">NEWS</a></li>
-            <li><a href="<?php echo esc_url(home_url('/gallery/')); ?>">GALLERY</a></li>
-            <li><a href="<?php echo esc_url(home_url('/movie/')); ?>">Movie</a></li>
+            <li><a href="<?php echo esc_url( function_exists( 'evoluer_fanclub_fcgallery_archive_url' ) ? evoluer_fanclub_fcgallery_archive_url() : home_url( '/fc-gallery/' ) ); ?>">GALLERY</a></li>
+            <li><a href="<?php echo esc_url( function_exists( 'evoluer_fanclub_fc_movie_archive_url' ) ? evoluer_fanclub_fc_movie_archive_url() : home_url( '/fc-movie/' ) ); ?>">Movie</a></li>
             <li><a href="<?php echo esc_url( function_exists( 'evoluer_fanclub_ticket_archive_url' ) ? evoluer_fanclub_ticket_archive_url() : home_url( '/ticket/' ) ); ?>">Ticket</a></li>
             <li><a href="<?php echo esc_url(home_url('/contact/')); ?>">Contact US</a></li>
           </ul>

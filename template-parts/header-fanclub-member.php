@@ -29,8 +29,8 @@ $member_name = function_exists( 'evoluer_fanclub_member_display_sama' )
 				<ul class="flex items-center gap-8 lg:gap-10 text-[18px] tracking-[0.01em] text-[#333333]">
 					<li><a href="<?php echo esc_url( home_url( '/fanclub/' ) ); ?>" class="no-underline text-inherit">TOP</a></li>
 					<li><a href="<?php echo esc_url( function_exists( 'evoluer_fanclub_fcnews_archive_url' ) ? evoluer_fanclub_fcnews_archive_url() : home_url( '/fcnews/' ) ); ?>" class="no-underline text-inherit">NEWS</a></li>
-					<li><a href="<?php echo esc_url( home_url( '/gallery/' ) ); ?>" class="no-underline text-inherit">GALLERY</a></li>
-					<li><a href="<?php echo esc_url( home_url( '/movie/' ) ); ?>" class="no-underline text-inherit">Movie</a></li>
+					<li><a href="<?php echo esc_url( function_exists( 'evoluer_fanclub_fcgallery_archive_url' ) ? evoluer_fanclub_fcgallery_archive_url() : home_url( '/fc-gallery/' ) ); ?>" class="no-underline text-inherit">GALLERY</a></li>
+					<li><a href="<?php echo esc_url( function_exists( 'evoluer_fanclub_fc_movie_archive_url' ) ? evoluer_fanclub_fc_movie_archive_url() : home_url( '/fc-movie/' ) ); ?>" class="no-underline text-inherit">Movie</a></li>
 					<li><a href="<?php echo esc_url( function_exists( 'evoluer_fanclub_ticket_archive_url' ) ? evoluer_fanclub_ticket_archive_url() : home_url( '/ticket/' ) ); ?>" class="no-underline text-inherit">Ticket</a></li>
 					<li><a href="<?php echo esc_url( home_url( '/contact/' ) ); ?>" class="no-underline text-inherit">Contact US</a></li>
 				</ul>
