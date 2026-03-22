@@ -2,6 +2,9 @@
 /**
  * Archive: ファンクラブ動画一覧（/fc-movie/ および /fanclub/{artist}/movie/）
  */
+if ( function_exists( 'evoluer_enqueue_fc_movie_player_script' ) ) {
+	evoluer_enqueue_fc_movie_player_script();
+}
 get_header( 'fanclub-member' );
 ?>
 
@@ -69,19 +72,12 @@ get_header( 'fanclub-member' );
 					<div class="js-fc-movie-card group relative block rounded-[12px] overflow-hidden bg-[#C9CDD0]">
 						<video
 							id="fc-movie-<?php echo esc_attr( (string) $index ); ?>"
-							class="js-fc-movie-video w-full aspect-[35/37] object-cover transition-transform duration-200 group-hover:scale-[1.02]"
+							class="js-fc-movie-video !w-full aspect-[35/37] object-cover transition-transform duration-200 group-hover:scale-[1.02]"
 							preload="metadata"
 							playsinline>
 							<source src="<?php echo esc_url( $video_url ); ?>"<?php echo $mime_type !== '' ? ' type="' . esc_attr( $mime_type ) . '"' : ''; ?>>
 						</video>
-						<button
-							type="button"
-							class="js-fc-movie-play absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 inline-flex items-center justify-center w-[78px] h-[78px] rounded-full bg-black/45 hover:bg-black/55 transition-colors"
-							aria-label="動画を再生">
-							<svg width="28" height="28" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-								<path d="M20 12V52L52 32L20 12Z" fill="#fff" />
-							</svg>
-						</button>
+						<?php get_template_part( 'template-parts/fc-movie-card-controls' ); ?>
 					</div>
 					<?php
 				++$index;
@@ -109,53 +105,6 @@ get_header( 'fanclub-member' );
 		</div>
 	</section>
 </main>
-
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-  var cards = document.querySelectorAll('.js-fc-movie-card');
-  cards.forEach(function (card) {
-    var video = card.querySelector('.js-fc-movie-video');
-    var playButton = card.querySelector('.js-fc-movie-play');
-    if (!video || !playButton) {
-      return;
-    }
-
-    var setPlaying = function (playing) {
-      playButton.style.display = playing ? 'none' : 'inline-flex';
-    };
-
-    playButton.addEventListener('click', function () {
-      if (video.paused) {
-        video.play().then(function () {
-          setPlaying(true);
-        }).catch(function () {
-          setPlaying(false);
-        });
-      } else {
-        video.pause();
-        setPlaying(false);
-      }
-    });
-
-    video.addEventListener('click', function () {
-      if (video.paused) {
-        video.play().then(function () {
-          setPlaying(true);
-        }).catch(function () {
-          setPlaying(false);
-        });
-      } else {
-        video.pause();
-        setPlaying(false);
-      }
-    });
-
-    video.addEventListener('play', function () { setPlaying(true); });
-    video.addEventListener('pause', function () { setPlaying(false); });
-    video.addEventListener('ended', function () { setPlaying(false); });
-  });
-});
-</script>
 
 <?php
 get_footer();

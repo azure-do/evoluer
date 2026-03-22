@@ -80,6 +80,59 @@ function evoluer_get_fanclub_request_path() {
 }
 
 /**
+ * Whether to load fc-movie-player.js (custom play + fullscreen on .js-fc-movie-card).
+ * Uses request path so hub pages work even when is_page_template() does not match the PHP filename.
+ *
+ * @return bool
+ */
+function evoluer_should_enqueue_fc_movie_player() {
+	if ( is_post_type_archive( 'fc-movie' ) ) {
+		return true;
+	}
+	if ( is_page_template( array( 'page-movie.php', 'page-yonekichi.php', 'page-shibuki.php' ) ) ) {
+		return true;
+	}
+	$path = evoluer_get_fanclub_request_path();
+	if ( $path === '' ) {
+		return false;
+	}
+	// Hub and all subpaths: /fanclub/yonekichi/ … /fanclub/shibuki/movie/ …
+	if ( preg_match( '#^fanclub/(yonekichi|shibuki)(/|$)#', $path ) ) {
+		return true;
+	}
+	// Short URLs without fanclub prefix (theme rewrites)
+	if ( preg_match( '#^(yonekichi|shibuki)(/|$)#', $path ) ) {
+		return true;
+	}
+
+	return false;
+}
+
+/**
+ * Enqueue shared fc-movie-player script (safe to call from templates before get_header).
+ *
+ * @return void
+ */
+function evoluer_enqueue_fc_movie_player_script() {
+	static $done = false;
+	if ( $done || is_admin() ) {
+		return;
+	}
+	$file = get_template_directory() . '/assets/js/fc-movie-player.js';
+	if ( ! file_exists( $file ) ) {
+		return;
+	}
+	$done = true;
+	wp_enqueue_script(
+		'evoluer-fc-movie-player',
+		get_template_directory_uri() . '/assets/js/fc-movie-player.js',
+		array(),
+		filemtime( $file ),
+		true
+	);
+}
+
+/**
  * Map artist segment in URL to fc-fanclub term slug (fanclub_a / fanclub_b).
  * Filter: evoluer_fanclub_artist_slug_to_term
  *
@@ -387,6 +440,8 @@ function add_files()
 		elseif (is_singular('artist')) {
 			wp_enqueue_script('slickjs', get_template_directory_uri() . '/assets/js/slick.min.js', array(), false, true);
 			wp_enqueue_script('artistjs', get_template_directory_uri() . '/assets/js/artist.js', array(), false, true);
+		} elseif ( evoluer_should_enqueue_fc_movie_player() ) {
+			evoluer_enqueue_fc_movie_player_script();
 		}
 	}
 }

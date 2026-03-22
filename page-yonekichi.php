@@ -1,14 +1,19 @@
 <?php
 /*
-Template Name: Fanclub (Member) - Fanclub 1
+Template Name: Fanclub (Member) - Fanclub 1 (Yonekichi)
 */
 ?>
 
+<?php
+if ( function_exists( 'evoluer_enqueue_fc_movie_player_script' ) ) {
+	evoluer_enqueue_fc_movie_player_script();
+}
+?>
 <?php get_header('fanclub-member'); ?>
 
 <?php
 // Fetch fc-news posts for current Fanclub (URL /fanclub/yonekichi/ … → fanclub_a).
-$fanclub_term_slug = function_exists( 'evoluer_fanclub_term_slug_for_request' ) ? evoluer_fanclub_term_slug_for_request() : 'fanclub_a';
+$fanclub_term_slug = function_exists('evoluer_fanclub_term_slug_for_request') ? evoluer_fanclub_term_slug_for_request() : 'fanclub_a';
 
 $news_items = array();
 $news_query = new WP_Query(
@@ -34,19 +39,19 @@ if ($news_query->have_posts()) {
 
 		$post_id   = get_the_ID();
 		$tag_names = wp_get_post_tags($post_id, array('fields' => 'names'));
-		$all_meta  = get_post_meta( $post_id );
+		$all_meta  = get_post_meta($post_id);
 		$is_out    = false;
-		foreach ( $all_meta as $meta_values ) {
-			foreach ( (array) $meta_values as $meta_value ) {
+		foreach ($all_meta as $meta_values) {
+			foreach ((array) $meta_values as $meta_value) {
 				$meta_value = (string) $meta_value;
-				if ( $meta_value === 'fc_out_news' ) {
+				if ($meta_value === 'fc_out_news') {
 					$is_out = true;
 					break 2;
 				}
 			}
 		}
-		$out_link = trim( (string) get_post_meta( $post_id, 'out_link', true ) );
-		$url      = $is_out && $out_link !== '' ? $out_link : get_permalink( $post_id );
+		$out_link = trim((string) get_post_meta($post_id, 'out_link', true));
+		$url      = $is_out && $out_link !== '' ? $out_link : get_permalink($post_id);
 
 		$news_items[] = array(
 			'date'  => get_the_date('Y/m/d'),
@@ -77,33 +82,33 @@ $gallery_query = new WP_Query(
 	)
 );
 
-if ( $gallery_query->have_posts() ) {
-	while ( $gallery_query->have_posts() ) {
+if ($gallery_query->have_posts()) {
+	while ($gallery_query->have_posts()) {
 		$gallery_query->the_post();
 		$post_id   = get_the_ID();
-		$fc_image  = get_post_meta( $post_id, 'fc_image', true );
+		$fc_image  = get_post_meta($post_id, 'fc_image', true);
 		$image_url = '';
 
-		if ( is_numeric( $fc_image ) ) {
-			$image_url = (string) wp_get_attachment_image_url( (int) $fc_image, 'large' );
-		} elseif ( is_array( $fc_image ) ) {
-			if ( isset( $fc_image['url'] ) ) {
+		if (is_numeric($fc_image)) {
+			$image_url = (string) wp_get_attachment_image_url((int) $fc_image, 'large');
+		} elseif (is_array($fc_image)) {
+			if (isset($fc_image['url'])) {
 				$image_url = (string) $fc_image['url'];
-			} elseif ( isset( $fc_image[0]['url'] ) ) {
+			} elseif (isset($fc_image[0]['url'])) {
 				$image_url = (string) $fc_image[0]['url'];
 			}
-		} elseif ( is_string( $fc_image ) ) {
+		} elseif (is_string($fc_image)) {
 			$image_url = $fc_image;
 		}
 
-		if ( $image_url === '' ) {
-			$image_url = (string) get_the_post_thumbnail_url( $post_id, 'large' );
+		if ($image_url === '') {
+			$image_url = (string) get_the_post_thumbnail_url($post_id, 'large');
 		}
 
-		if ( $image_url !== '' ) {
+		if ($image_url !== '') {
 			$gallery_items[] = array(
 				'img' => $image_url,
-				'alt' => get_the_title( $post_id ),
+				'alt' => get_the_title($post_id),
 			);
 		}
 	}
@@ -128,49 +133,49 @@ $movie_query = new WP_Query(
 	)
 );
 
-if ( $movie_query->have_posts() ) {
-	while ( $movie_query->have_posts() ) {
+if ($movie_query->have_posts()) {
+	while ($movie_query->have_posts()) {
 		$movie_query->the_post();
 		$post_id    = get_the_ID();
-		$fc_video   = get_post_meta( $post_id, 'fc_video', true );
+		$fc_video   = get_post_meta($post_id, 'fc_video', true);
 		$video_url  = '';
 		$is_video   = false;
 		$mime_type  = '';
 
-		if ( is_numeric( $fc_video ) ) {
+		if (is_numeric($fc_video)) {
 			$attachment_id = (int) $fc_video;
-			$mime_type     = (string) get_post_mime_type( $attachment_id );
-			$is_video      = strpos( $mime_type, 'video/' ) === 0;
-			if ( $is_video ) {
-				$video_url = (string) wp_get_attachment_url( $attachment_id );
+			$mime_type     = (string) get_post_mime_type($attachment_id);
+			$is_video      = strpos($mime_type, 'video/') === 0;
+			if ($is_video) {
+				$video_url = (string) wp_get_attachment_url($attachment_id);
 			}
-		} elseif ( is_array( $fc_video ) ) {
-			$attachment_id = isset( $fc_video['id'] ) ? (int) $fc_video['id'] : 0;
-			if ( $attachment_id > 0 ) {
-				$mime_type = (string) get_post_mime_type( $attachment_id );
-				$is_video  = strpos( $mime_type, 'video/' ) === 0;
-				if ( $is_video ) {
-					$video_url = (string) wp_get_attachment_url( $attachment_id );
+		} elseif (is_array($fc_video)) {
+			$attachment_id = isset($fc_video['id']) ? (int) $fc_video['id'] : 0;
+			if ($attachment_id > 0) {
+				$mime_type = (string) get_post_mime_type($attachment_id);
+				$is_video  = strpos($mime_type, 'video/') === 0;
+				if ($is_video) {
+					$video_url = (string) wp_get_attachment_url($attachment_id);
 				}
 			}
-			if ( ! $is_video && isset( $fc_video['type'] ) ) {
+			if (! $is_video && isset($fc_video['type'])) {
 				$mime_type = (string) $fc_video['type'];
-				$is_video  = strpos( $mime_type, 'video/' ) === 0;
+				$is_video  = strpos($mime_type, 'video/') === 0;
 			}
-			if ( ! $is_video && isset( $fc_video['url'] ) ) {
+			if (! $is_video && isset($fc_video['url'])) {
 				$video_url = (string) $fc_video['url'];
-				$is_video  = (bool) preg_match( '/\.(mp4|webm|ogg|mov|m4v)(\?.*)?$/i', $video_url );
+				$is_video  = (bool) preg_match('/\.(mp4|webm|ogg|mov|m4v)(\?.*)?$/i', $video_url);
 			}
-		} elseif ( is_string( $fc_video ) && $fc_video !== '' ) {
+		} elseif (is_string($fc_video) && $fc_video !== '') {
 			$video_url = $fc_video;
-			$is_video  = (bool) preg_match( '/\.(mp4|webm|ogg|mov|m4v)(\?.*)?$/i', $video_url );
+			$is_video  = (bool) preg_match('/\.(mp4|webm|ogg|mov|m4v)(\?.*)?$/i', $video_url);
 		}
 
-		if ( $is_video && $video_url !== '' ) {
+		if ($is_video && $video_url !== '') {
 			$movie_items[] = array(
 				'video_url' => $video_url,
 				'mime_type' => $mime_type,
-				'title'     => get_the_title( $post_id ),
+				'title'     => get_the_title($post_id),
 			);
 		}
 	}
@@ -195,15 +200,15 @@ $ticket_query = new WP_Query(
 	)
 );
 
-if ( $ticket_query->have_posts() ) {
-	while ( $ticket_query->have_posts() ) {
+if ($ticket_query->have_posts()) {
+	while ($ticket_query->have_posts()) {
 		$ticket_query->the_post();
 		$post_id = get_the_ID();
 
 		$ticket_items[] = array(
-			'title' => get_the_title( $post_id ),
-			'url'   => get_permalink( $post_id ),
-			'date'  => get_the_date( 'Y/m/d', $post_id ),
+			'title' => get_the_title($post_id),
+			'url'   => get_permalink($post_id),
+			'date'  => get_the_date('Y/m/d', $post_id),
 		);
 	}
 	wp_reset_postdata();
@@ -213,7 +218,7 @@ if ( $ticket_query->have_posts() ) {
 <main id="container" class="bg-[#DDE4DE] pb-[20px] md:pb-[30px] xl:pb-[40px]">
 	<div class="w-full max-w-[1130px] mx-auto px-[30px]">
 		<?php
-		if ( function_exists( 'evoluer_fanclub_member_period_notice_html' ) ) {
+		if (function_exists('evoluer_fanclub_member_period_notice_html')) {
 			echo evoluer_fanclub_member_period_notice_html(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in helper
 		}
 		?>
@@ -257,7 +262,7 @@ if ( $ticket_query->have_posts() ) {
 		</div>
 
 		<div class="flex justify-center mt-[28px] md:mt-[40px] xl:mt-[54px]">
-			<a href="<?php echo esc_url( function_exists( 'evoluer_fanclub_fcnews_archive_url' ) ? evoluer_fanclub_fcnews_archive_url() : home_url( '/fcnews/' ) ); ?>" class="inline-flex items-center gap-[10px] px-[30px] xl:px-[70px] py-[10px] border border-[#13AA05] !text-[#13AA05] text-[14px] rounded-[2px]">
+			<a href="<?php echo esc_url(function_exists('evoluer_fanclub_fcnews_archive_url') ? evoluer_fanclub_fcnews_archive_url() : home_url('/fcnews/')); ?>" class="inline-flex items-center gap-[10px] px-[30px] xl:px-[70px] py-[10px] border border-[#13AA05] !text-[#13AA05] text-[14px] rounded-[2px]">
 				<span class="font-bold">>></span>
 				<span>もっと見る</span>
 			</a>
@@ -272,14 +277,14 @@ if ( $ticket_query->have_posts() ) {
 				</h3>
 			</div>
 
-			<?php if ( ! empty($gallery_items) ) : ?>
+			<?php if (! empty($gallery_items)) : ?>
 				<div class="grid grid-cols-1 md:grid-cols-3 gap-[34px]">
 					<?php foreach ($gallery_items as $g) : ?>
 						<div class="group relative block rounded-[12px] overflow-hidden bg-[#C9CDD0]">
 							<img
 								src="<?php echo esc_url($g['img']); ?>"
 								alt="<?php echo esc_attr($g['alt']); ?>"
-								class="!w-full !h-[240px] object-cover transition-transform duration-200 group-hover:scale-[1.02]" />
+								class="!w-full aspect-[35/37] object-cover transition-transform duration-200 group-hover:scale-[1.02]" />
 						</div>
 					<?php endforeach; ?>
 				</div>
@@ -304,13 +309,18 @@ if ( $ticket_query->have_posts() ) {
 				</h3>
 			</div>
 
-			<?php if ( ! empty($movie_items) ) : ?>
+			<?php if (! empty($movie_items)) : ?>
 				<div class="grid grid-cols-1 md:grid-cols-3 gap-[34px] mt-[30px]">
-					<?php foreach ($movie_items as $m) : ?>
-						<div class="group relative block rounded-[12px] overflow-hidden bg-[#C9CDD0]">
-							<video class="w-full h-[220px] object-cover" controls preload="metadata" playsinline>
-								<source src="<?php echo esc_url($m['video_url']); ?>"<?php echo ! empty($m['mime_type']) ? ' type="' . esc_attr($m['mime_type']) . '"' : ''; ?>>
+					<?php foreach ($movie_items as $index => $m) : ?>
+						<div class="js-fc-movie-card group relative block rounded-[12px] overflow-hidden bg-[#C9CDD0]">
+							<video
+								id="fc-movie-<?php echo esc_attr((string) $index); ?>"
+								class="js-fc-movie-video !w-full aspect-[35/37] object-cover transition-transform duration-200 group-hover:scale-[1.02]"
+								preload="metadata"
+								playsinline>
+								<source src="<?php echo esc_url($m['video_url']); ?>" <?php echo ! empty($m['mime_type']) ? ' type="' . esc_attr($m['mime_type']) . '"' : ''; ?>>
 							</video>
+							<?php get_template_part('template-parts/fc-movie-card-controls'); ?>
 						</div>
 					<?php endforeach; ?>
 				</div>
@@ -319,7 +329,7 @@ if ( $ticket_query->have_posts() ) {
 			<?php endif; ?>
 
 			<div class="flex justify-center mt-[26px] md:mt-[40px] xl:mt-[54px]">
-				<a href="#" class="inline-flex items-center gap-[10px] px-[30px] xl:px-[70px] py-[10px] border border-[#13AA05] !text-[#13AA05] text-[14px] rounded-[2px]">
+				<a href="<?php echo esc_url(function_exists('evoluer_fanclub_hub_section_url') ? evoluer_fanclub_hub_section_url('yonekichi', 'movie') : home_url('/fanclub/yonekichi/movie/')); ?>" class="inline-flex items-center gap-[10px] px-[30px] xl:px-[70px] py-[10px] border border-[#13AA05] !text-[#13AA05] text-[14px] rounded-[2px]">
 					<span class="font-bold">>></span>
 					<span>もっと見る</span>
 				</a>
@@ -335,11 +345,11 @@ if ( $ticket_query->have_posts() ) {
 				</h3>
 			</div>
 
-			<?php if ( ! empty($ticket_items) ) : ?>
+			<?php if (! empty($ticket_items)) : ?>
 				<div class="bg-transparent overflow-hidden mt-[30px]">
 					<?php foreach ($ticket_items as $t) : ?>
-						<a href="<?php echo esc_url( $t['url'] ); ?>" class="group block px-[4px] md:px-[8px] xl:px-[22px] py-[12px] md:pt-[18px] md:pb-[20px] xl:pt-[18px] xl:pb-[20px] border-b border-[#ffffff5c] transition-colors hover:bg-white/10">
-							<span class="text-[#525252] text-[14px] font-semibold block"><?php echo esc_html( $t['date'] ); ?></span>
+						<a href="<?php echo esc_url($t['url']); ?>" class="group block px-[4px] md:px-[8px] xl:px-[22px] py-[12px] md:pt-[18px] md:pb-[20px] xl:pt-[18px] xl:pb-[20px] border-b border-[#ffffff5c] transition-colors hover:bg-white/10">
+							<span class="text-[#525252] text-[14px] font-semibold block"><?php echo esc_html($t['date']); ?></span>
 							<p class="text-[#222] text-[14px] lg:text-[14px] xl:text-[16px] leading-relaxed font-semibold mt-[6px] group-hover:underline">
 								<?php echo esc_html($t['title']); ?>
 							</p>
@@ -351,7 +361,7 @@ if ( $ticket_query->have_posts() ) {
 			<?php endif; ?>
 
 			<div class="flex justify-center mt-[26px] md:mt-[40px] xl:mt-[54px]">
-				<a href="<?php echo esc_url( function_exists( 'evoluer_fanclub_ticket_list_url' ) ? evoluer_fanclub_ticket_list_url() : home_url( '/ticket/' ) ); ?>" class="inline-flex items-center gap-[10px] px-[30px] xl:px-[70px] py-[10px] border border-[#13AA05] !text-[#13AA05] text-[14px] rounded-[2px]">
+				<a href="<?php echo esc_url(function_exists('evoluer_fanclub_ticket_list_url') ? evoluer_fanclub_ticket_list_url() : home_url('/ticket/')); ?>" class="inline-flex items-center gap-[10px] px-[30px] xl:px-[70px] py-[10px] border border-[#13AA05] !text-[#13AA05] text-[14px] rounded-[2px]">
 					<span class="font-bold">>></span>
 					<span>もっと見る</span>
 				</a>
