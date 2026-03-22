@@ -43,18 +43,18 @@ function evoluer_fanclub_url_segment_for_post_type( $post_type ) {
 }
 
 /**
- * fc-fanclub ターム slug → アーティストURLスラッグ（shibuki / yonekichi）。
+ * fc-fanclub ターム slug → アーティストURLスラッグ（yonekichi = A 中村米吉 / shibuki = B 紫吹）。
  *
  * @param string $term_slug fanclub_a|fanclub_b.
  * @return string
  */
 function evoluer_fanclub_term_slug_to_artist_slug( $term_slug ) {
 	$map = array(
-		'fanclub_a' => 'shibuki',
-		'fanclub_b' => 'yonekichi',
+		'fanclub_a' => 'yonekichi',
+		'fanclub_b' => 'shibuki',
 	);
 
-	return isset( $map[ $term_slug ] ) ? $map[ $term_slug ] : 'shibuki';
+	return isset( $map[ $term_slug ] ) ? $map[ $term_slug ] : 'yonekichi';
 }
 
 /**
@@ -66,11 +66,11 @@ function evoluer_fanclub_default_artist_slug_for_redirect() {
 	if ( is_user_logged_in() ) {
 		$user = wp_get_current_user();
 		if ( $user && in_array( 'fanclub_b', (array) $user->roles, true ) ) {
-			return 'yonekichi';
+			return 'shibuki';
 		}
 	}
 
-	return 'shibuki';
+	return 'yonekichi';
 }
 
 /**
@@ -142,7 +142,7 @@ add_action(
 			return;
 		}
 
-		$artists  = apply_filters( 'evoluer_fanclub_artist_slugs', array( 'shibuki', 'yonekichi' ) );
+		$artists  = apply_filters( 'evoluer_fanclub_artist_slugs', array( 'yonekichi', 'shibuki' ) );
 		$segments = evoluer_fanclub_url_segment_to_post_type();
 
 		foreach ( $artists as $artist ) {
@@ -228,8 +228,8 @@ add_action(
 		$map = apply_filters(
 			'evoluer_fanclub_artist_slug_to_term',
 			array(
-				'shibuki'   => 'fanclub_a',
-				'yonekichi' => 'fanclub_b',
+				'yonekichi' => 'fanclub_a',
+				'shibuki'   => 'fanclub_b',
 			)
 		);
 
@@ -270,8 +270,8 @@ add_action(
 		$map = apply_filters(
 			'evoluer_fanclub_artist_slug_to_term',
 			array(
-				'shibuki'   => 'fanclub_a',
-				'yonekichi' => 'fanclub_b',
+				'yonekichi' => 'fanclub_a',
+				'shibuki'   => 'fanclub_b',
 			)
 		);
 

@@ -7,7 +7,7 @@ Template Name: Fanclub (Member) - Fanclub 1
 <?php get_header('fanclub-member'); ?>
 
 <?php
-// Fetch fc-news posts for current Fanclub (URL /fanclub/shibuki/ … → fanclub_a, /fanclub/yonekichi/ … → fanclub_b).
+// Fetch fc-news posts for current Fanclub (URL /fanclub/shibuki/ … → fanclub_b, /fanclub/yonekichi/ … → fanclub_a).
 $fanclub_term_slug = function_exists( 'evoluer_fanclub_term_slug_for_request' ) ? evoluer_fanclub_term_slug_for_request() : 'fanclub_a';
 
 $news_items = array();

@@ -44,11 +44,11 @@
             <li>
               <span>FAN CLUB</span>
               <div class="!text-[12px] pl-[12px] space-y-3 mt-2 mb-4">
-                <a href="<?php echo esc_url(home_url('/fanclub/shibuki/')); ?>">
-                  <span class="jp-point-font block">シブキofficial fan club</span>
-                </a>
                 <a href="<?php echo esc_url(home_url('/fanclub/yonekichi/')); ?>">
                   <span class="jp-point-font block">中村米吉official fan club</span>
+                </a>
+                <a href="<?php echo esc_url(home_url('/fanclub/shibuki/')); ?>">
+                  <span class="jp-point-font block">紫吹official fan club</span>
                 </a>
               </div>
             </li>
@@ -56,30 +56,30 @@
           </ul>
         </div>
 
-        <!-- Fan club 1 -->
+        <!-- Fan club 1（中村米吉 / fanclub_a） -->
         <div class="!space-y-14">
           <h3 class="text-[18px] font-medium tracking-[-1px] text-[#676767] h-[32px]">
             中村米吉<br>official fan club
           </h3>
           <ul class="space-y-3 text-[16px]">
-            <li><a href="<?php echo esc_url( function_exists( 'evoluer_fanclub_fcnews_archive_url' ) ? evoluer_fanclub_fcnews_archive_url() : home_url( '/fcnews/' ) ); ?>">NEWS</a></li>
-            <li><a href="<?php echo esc_url( function_exists( 'evoluer_fanclub_fcgallery_archive_url' ) ? evoluer_fanclub_fcgallery_archive_url() : home_url( '/fc-gallery/' ) ); ?>">GALLERY</a></li>
-            <li><a href="<?php echo esc_url( function_exists( 'evoluer_fanclub_fc_movie_archive_url' ) ? evoluer_fanclub_fc_movie_archive_url() : home_url( '/fc-movie/' ) ); ?>">Movie</a></li>
-            <li><a href="<?php echo esc_url( function_exists( 'evoluer_fanclub_ticket_archive_url' ) ? evoluer_fanclub_ticket_archive_url() : home_url( '/ticket/' ) ); ?>">Ticket</a></li>
+            <li><a href="<?php echo esc_url( function_exists( 'evoluer_fanclub_hub_section_url' ) ? evoluer_fanclub_hub_section_url( 'yonekichi', 'news' ) : home_url( '/fanclub/yonekichi/news/' ) ); ?>">NEWS</a></li>
+            <li><a href="<?php echo esc_url( function_exists( 'evoluer_fanclub_hub_section_url' ) ? evoluer_fanclub_hub_section_url( 'yonekichi', 'gallery' ) : home_url( '/fanclub/yonekichi/gallery/' ) ); ?>">GALLERY</a></li>
+            <li><a href="<?php echo esc_url( function_exists( 'evoluer_fanclub_hub_section_url' ) ? evoluer_fanclub_hub_section_url( 'yonekichi', 'movie' ) : home_url( '/fanclub/yonekichi/movie/' ) ); ?>">Movie</a></li>
+            <li><a href="<?php echo esc_url( function_exists( 'evoluer_fanclub_hub_section_url' ) ? evoluer_fanclub_hub_section_url( 'yonekichi', 'ticket' ) : home_url( '/fanclub/yonekichi/ticket/' ) ); ?>">Ticket</a></li>
             <li><a href="<?php echo esc_url(home_url('/contact/')); ?>">Contact US</a></li>
           </ul>
         </div>
 
-        <!-- Fan club 2 -->
+        <!-- Fan club 2（紫吹 / fanclub_b） -->
         <div class="!space-y-14">
           <h3 class="text-[18px] font-medium tracking-[-1px] text-[#676767] h-[32px]">
-            中村米吉<br>official fan club
+            紫吹<br>official fan club
           </h3>
           <ul class="space-y-3 text-[16px]">
-            <li><a href="<?php echo esc_url( function_exists( 'evoluer_fanclub_fcnews_archive_url' ) ? evoluer_fanclub_fcnews_archive_url() : home_url( '/fcnews/' ) ); ?>">NEWS</a></li>
-            <li><a href="<?php echo esc_url( function_exists( 'evoluer_fanclub_fcgallery_archive_url' ) ? evoluer_fanclub_fcgallery_archive_url() : home_url( '/fc-gallery/' ) ); ?>">GALLERY</a></li>
-            <li><a href="<?php echo esc_url( function_exists( 'evoluer_fanclub_fc_movie_archive_url' ) ? evoluer_fanclub_fc_movie_archive_url() : home_url( '/fc-movie/' ) ); ?>">Movie</a></li>
-            <li><a href="<?php echo esc_url( function_exists( 'evoluer_fanclub_ticket_archive_url' ) ? evoluer_fanclub_ticket_archive_url() : home_url( '/ticket/' ) ); ?>">Ticket</a></li>
+            <li><a href="<?php echo esc_url( function_exists( 'evoluer_fanclub_hub_section_url' ) ? evoluer_fanclub_hub_section_url( 'shibuki', 'news' ) : home_url( '/fanclub/shibuki/news/' ) ); ?>">NEWS</a></li>
+            <li><a href="<?php echo esc_url( function_exists( 'evoluer_fanclub_hub_section_url' ) ? evoluer_fanclub_hub_section_url( 'shibuki', 'gallery' ) : home_url( '/fanclub/shibuki/gallery/' ) ); ?>">GALLERY</a></li>
+            <li><a href="<?php echo esc_url( function_exists( 'evoluer_fanclub_hub_section_url' ) ? evoluer_fanclub_hub_section_url( 'shibuki', 'movie' ) : home_url( '/fanclub/shibuki/movie/' ) ); ?>">Movie</a></li>
+            <li><a href="<?php echo esc_url( function_exists( 'evoluer_fanclub_hub_section_url' ) ? evoluer_fanclub_hub_section_url( 'shibuki', 'ticket' ) : home_url( '/fanclub/shibuki/ticket/' ) ); ?>">Ticket</a></li>
             <li><a href="<?php echo esc_url(home_url('/contact/')); ?>">Contact US</a></li>
           </ul>
         </div>

@@ -7,7 +7,7 @@ Template Name: Fanclub (Member) - Gallery
 <?php
 get_header('fanclub-member');
 
-// URL /fanclub/shibuki/gallery/ → fanclub_a, /fanclub/yonekichi/gallery/ → fanclub_b (see evoluer_fanclub_term_slug_for_request).
+// URL /fanclub/yonekichi/gallery/ → fanclub_a, /fanclub/shibuki/gallery/ → fanclub_b (see evoluer_fanclub_term_slug_for_request).
 $fanclub_term_slug = function_exists( 'evoluer_fanclub_term_slug_for_request' ) ? evoluer_fanclub_term_slug_for_request() : 'fanclub_a';
 $gallery_items     = array();
 $gallery_query     = new WP_Query(

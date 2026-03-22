@@ -7,7 +7,7 @@ Template Name: Fanclub (Member) - Movie
 <?php
 get_header('fanclub-member');
 
-// URL /fanclub/shibuki/movie/ → fanclub_a, /fanclub/yonekichi/movie/ → fanclub_b.
+// URL /fanclub/yonekichi/movie/ → fanclub_a, /fanclub/shibuki/movie/ → fanclub_b.
 $fanclub_term_slug = function_exists( 'evoluer_fanclub_term_slug_for_request' ) ? evoluer_fanclub_term_slug_for_request() : 'fanclub_a';
 $movie_items       = array();
 $movie_query       = new WP_Query(

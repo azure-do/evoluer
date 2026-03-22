@@ -10,8 +10,8 @@
         ファンクラブ限定の<br>特別な体験を!
       </h1>
       <div class="flex gap-5">
-        <a href="<?php echo esc_url(home_url('/fanclub-event')); ?>" class="xl:min-w-[180px] rounded-[12px] header_btn_login ml-3 text-[16px] border border-[#13AA05] border-solid !border-[1.5px] !text-[#13AA05] px-8 py-3 inline-block no-underline text-center">イベントを見る</a>
-        <a href="<?php echo esc_url(home_url('/fanclub/login/')); ?>" class="xl:min-w-[180px] rounded-[12px] header_btn_login ml-3 text-[16px] border bg-[#13AA05] border-[#13AA05] border-solid !border-[1.5px] !text-white px-8 py-3 inline-block no-underline text-center">ログイン</a>
+        <a href="<?php echo esc_url(home_url('/fanclub-event')); ?>" class="xl:min-w-[180px] rounded-[12px] header_btn_login ml-3 text-[14px] lg:text-[16px] border border-[#13AA05] border-solid !border-[1.5px] !text-[#13AA05] pxpx-8 py-3 inline-block no-underline text-center">イベントを見る</a>
+        <a href="<?php echo esc_url(home_url('/fanclub/login/')); ?>" class="xl:min-w-[180px] rounded-[12px] header_btn_login ml-3 text-[14px] lg:text-[16px] border bg-[#13AA05] border-[#13AA05] border-solid !border-[1.5px] !text-white pxpx-8 py-3 inline-block no-underline text-center">ログイン</a>
       </div>
     </div>
   </div>
@@ -93,10 +93,12 @@
             </div>
           </div>
         </div>
-        <button class="w-full md:w-auto bg-[#13AA05] hover:bg-[#0F9105] text-white rounded-[8px] text-[16px] lg:text-[18px] xl:text-[20px] font-bold py-4 px-[30px] md:px-[40px] xl:px-[88px] mt-12 lg:mt-16 xl:mt-20 transition-colors duration-200 shadow"
-          type="button">
-          入会手続きに進む
-        </button>
+        <a href="<?php echo esc_url(home_url('/fanclub/register/')); ?>">
+          <button class="w-full md:w-auto bg-[#13AA05] hover:bg-[#0F9105] text-white rounded-[8px] text-[16px] lg:text-[18px] xl:text-[20px] font-bold py-4 px-[30px] md:px-[40px] xl:px-[88px] mt-12 lg:mt-16 xl:mt-20 transition-colors duration-200 shadow cursor-pointer"
+            type="button">
+            入会手続きに進む
+          </button>
+        </a>
       </div>
     </div>
   </div>
