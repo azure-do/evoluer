@@ -83,15 +83,16 @@
   <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-T748JC6" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <!-- End Google Tag Manager (noscript) -->
   <div id="wrapper">
-    <header class="fixed top-0 left-0 w-full z-50 flex bg-white justify-center items-center py-1 md:py-2 lg:py- xl:py-8">
-      <div class="w-full flex justify-center md:justify-between items-center max-w-[1440px] mx-auto px-[100px]">
-        <h1 class="">
+    <header class="fixed top-0 left-0 w-full z-50 flex bg-white justify-center items-center py-1 md:py-2 lg:py-2 xl:py-8">
+      <div class="w-full flex max-w-[1440px] items-center justify-between gap-3 mx-auto px-4 sm:px-8 md:px-12 lg:px-[100px]">
+        <h1 class="shrink-0">
           <a href="<?php echo esc_url(home_url()); ?>">
             <img src="<?php echo get_template_directory_uri(); ?>/assets/images/logo_pc.svg" alt="Evoluer" />
           </a>
         </h1>
-        <nav class="hidden md:block" id="menu">
-          <ul class="header_list flex items-center justify-center gap-[10px] text-[16px]">
+        <div class="flex min-w-0 flex-1 items-center justify-end gap-2 md:gap-3">
+          <nav class="hidden lg:block min-w-0 flex-1" id="menu">
+            <ul class="header_list flex flex-wrap items-center justify-end gap-[10px] text-[16px]">
             <li>
               <a href="<?php echo esc_url(home_url()); ?>" class="header_list_item text-center en-font px-[8px] xl:px-[16px] text-[16px] no-underline text-inherit">TOP</a>
             </li>
@@ -116,19 +117,19 @@
             <li>
               <a href="<?php echo esc_url(home_url('/fanclub/register/')); ?>" class="rounded-[8px] header_btn_signup mx-2 text-[16px] border border-[#13AA05] bg-[#13AA05] !text-white px-6 py-2 rounded-[8px] inline-block no-underline">新規入会</a>
             </li>
-            <li class="flex items-center">
-              <span class="inline-block cursor-pointer">
-                <svg viewBox="0 0 32 32" width="28" height="28" fill="currentColor" aria-hidden="true">
-                  <rect y="7" width="32" height="3" rx="1.5" />
-                  <rect y="14.5" width="32" height="3" rx="1.5" />
-                  <rect y="22" width="32" height="3" rx="1.5" />
-                </svg>
-              </span>
-            </li>
           </ul>
         </nav>
+        <button type="button" class="js-evoluer-offcanvas-open inline-flex shrink-0 items-center justify-center rounded-lg p-2 text-[#333] hover:bg-black/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#13AA05]" data-evoluer-offcanvas="main" aria-expanded="false" aria-controls="evoluer-offcanvas-main" aria-label="<?php esc_attr_e('メニューを開く', 'evoluer'); ?>">
+          <svg viewBox="0 0 32 32" width="28" height="28" fill="currentColor" aria-hidden="true">
+            <rect y="7" width="32" height="3" rx="1.5" />
+            <rect y="14.5" width="32" height="3" rx="1.5" />
+            <rect y="22" width="32" height="3" rx="1.5" />
+          </svg>
+        </button>
+        </div>
       </div>
     </header>
+    <?php get_template_part('template-parts/header-modal', 'main'); ?>
     <div id="header" class="mb-header">
       <div class="mb pc-cont-no">
         <h1 class="header_logo">
@@ -136,7 +137,7 @@
             <img src="<?php echo get_template_directory_uri(); ?>/assets/images/logo_pc.svg" alt="Evoluer" />
           </a>
         </h1>
-        <div class="header_nav_button">
+        <div class="header_nav_button js-evoluer-offcanvas-open" data-evoluer-offcanvas="main" role="button" tabindex="0" aria-expanded="false" aria-controls="evoluer-offcanvas-main" aria-label="<?php esc_attr_e('メニューを開く', 'evoluer'); ?>">
           <span></span>
           <span></span>
           <span></span>

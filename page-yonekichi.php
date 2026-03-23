@@ -12,8 +12,10 @@ if ( function_exists( 'evoluer_enqueue_fc_movie_player_script' ) ) {
 <?php get_header('fanclub-member'); ?>
 
 <?php
-// Fetch fc-news posts for current Fanclub (URL /fanclub/yonekichi/ … → fanclub_a).
-$fanclub_term_slug = function_exists('evoluer_fanclub_term_slug_for_request') ? evoluer_fanclub_term_slug_for_request() : 'fanclub_a';
+// Fetch fc-fanclub posts for current Fanclub (URL /fanclub/yonekichi/ …).
+$fanclub_term_slugs = function_exists( 'evoluer_fanclub_term_slugs_for_request' )
+	? evoluer_fanclub_term_slugs_for_request()
+	: array( 'fanclub_yonekichi' );
 
 $news_items = array();
 $news_query = new WP_Query(
@@ -26,7 +28,7 @@ $news_query = new WP_Query(
 			array(
 				'taxonomy' => 'fc-fanclub',
 				'field'    => 'slug',
-				'terms'    => array($fanclub_term_slug),
+				'terms'    => $fanclub_term_slugs,
 			),
 		),
 		'post_status' => 'publish',
@@ -75,7 +77,7 @@ $gallery_query = new WP_Query(
 			array(
 				'taxonomy' => 'fc-fanclub',
 				'field'    => 'slug',
-				'terms'    => array($fanclub_term_slug),
+				'terms'    => $fanclub_term_slugs,
 			),
 		),
 		'post_status' => 'publish',
@@ -126,7 +128,7 @@ $movie_query = new WP_Query(
 			array(
 				'taxonomy' => 'fc-fanclub',
 				'field'    => 'slug',
-				'terms'    => array($fanclub_term_slug),
+				'terms'    => $fanclub_term_slugs,
 			),
 		),
 		'post_status' => 'publish',
@@ -193,7 +195,7 @@ $ticket_query = new WP_Query(
 			array(
 				'taxonomy' => 'fc-fanclub',
 				'field'    => 'slug',
-				'terms'    => array($fanclub_term_slug),
+				'terms'    => $fanclub_term_slugs,
 			),
 		),
 		'post_status' => 'publish',
@@ -223,7 +225,7 @@ if ($ticket_query->have_posts()) {
 		}
 		?>
 	</div>
-	<section class="w-full max-w-[1130px] mx-auto px-[30px] pt-[60px] xl:pt-[100px] pb-[28px]">
+	<section class="w-full max-w-[1130px] mx-auto px-[30px] pt-[20px] xl:pt-[60px] pb-[28px]">
 		<div class="relative mb-[32px] xl:mb-[60px]">
 			<h3 class="tracking-[8px] text-center text-[28px] lg:text-[32px] xl:text-[34px] font-bold text-[#FBFEA3]" style="-webkit-text-stroke: 1px #096B00;">
 				NEWS
@@ -293,7 +295,7 @@ if ($ticket_query->have_posts()) {
 			<?php endif; ?>
 
 			<div class="flex justify-center mt-[26px] md:mt-[40px] xl:mt-[54px]">
-				<a href="#" class="inline-flex items-center gap-[10px] px-[30px] xl:px-[70px] py-[10px] border border-[#13AA05] !text-[#13AA05] text-[14px] rounded-[2px]">
+				<a href="<?php echo home_url('/fanclub/yonekichi/gallery/'); ?>" class="inline-flex items-center gap-[10px] px-[30px] xl:px-[70px] py-[10px] border border-[#13AA05] !text-[#13AA05] text-[14px] rounded-[2px]">
 					<span class="font-bold">>></span>
 					<span>もっと見る</span>
 				</a>

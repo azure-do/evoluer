@@ -51,45 +51,7 @@ $(function () {
     return false;
   });
 
-  // header
-  var $headerNav = $(".header_nav_button");
-  var $headerCon = $(".header_content");
-  $headerNav.on("click", function () {
-    if ($header.hasClass("on")) {
-      $header.removeClass("anime");
-      setTimeout(function () {
-        $header.removeClass("on");
-      }, 100);
-      if (
-        ua.indexOf("iPhone") > 0 ||
-        ua.indexOf("iPod") > 0 ||
-        (ua.indexOf("Android") > 0 && ua.indexOf("Mobile") > 0) ||
-        ua.indexOf("iPad") > 0
-      ) {
-        $(".header_content").css("height", "");
-      }
-      // $('html').css('overflow','').off('.noScroll');
-    } else {
-      $header.addClass("on");
-      setTimeout(function () {
-        $header.addClass("anime");
-      }, 100);
-      if (
-        ua.indexOf("iPhone") > 0 ||
-        ua.indexOf("iPod") > 0 ||
-        (ua.indexOf("Android") > 0 && ua.indexOf("Mobile") > 0) ||
-        ua.indexOf("iPad") > 0
-      ) {
-        $(".header_content").css("height", window.innerHeight);
-      }
-      //    $('html').css('overflow','hidden').on('touchmove.noScroll', function(e) {
-      //     e.preventDefault();
-      // });
-    }
-    $('.anchor-linkclose a[href]').on('click', function(event) {
-      $headerNav.trigger('click');
-    });
-  });
+  // Mobile hamburger: off-canvas menu is handled by header-offcanvas.js (.js-evoluer-offcanvas-open on .header_nav_button).
   $(window).on("load resize orientationchange", function () {
     var wW = window.innerWidth;
     var $headerButton = $(".header_list_has_under");

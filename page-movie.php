@@ -10,8 +10,10 @@ if ( function_exists( 'evoluer_enqueue_fc_movie_player_script' ) ) {
 }
 get_header('fanclub-member');
 
-// URL /fanclub/yonekichi/movie/ → fanclub_a, /fanclub/shibuki/movie/ → fanclub_b.
-$fanclub_term_slug = function_exists( 'evoluer_fanclub_term_slug_for_request' ) ? evoluer_fanclub_term_slug_for_request() : 'fanclub_a';
+// URL /fanclub/yonekichi/movie/ … and /fanclub/shibuki/movie/ …
+$fanclub_term_slugs = function_exists( 'evoluer_fanclub_term_slugs_for_request' )
+	? evoluer_fanclub_term_slugs_for_request()
+	: array( 'fanclub_yonekichi' );
 $movie_items       = array();
 $movie_query       = new WP_Query(
 	array(
@@ -23,7 +25,7 @@ $movie_query       = new WP_Query(
 			array(
 				'taxonomy' => 'fc-fanclub',
 				'field'    => 'slug',
-				'terms'    => array( $fanclub_term_slug ),
+				'terms'    => $fanclub_term_slugs,
 			),
 		),
 		'post_status' => 'publish',
@@ -89,8 +91,15 @@ if ( $movie_query->have_posts() ) {
 		?>
 	</div>
 
-	<section class="w-full pt-[60px] pb-[80px]">
+	<section class="w-full pt-0 lg:pt-[60px] pb-[80px]">
 		<div class="w-full max-w-[1130px] mx-auto px-[30px]">
+			<div class="mb-[16px] md:mb-[20px]">
+				<?php
+				if ( function_exists( 'evoluer_fanclub_back_to_hub_button_html' ) ) {
+					echo evoluer_fanclub_back_to_hub_button_html(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				}
+				?>
+			</div>
 			<div class="relative mb-[32px] xl:mb-[60px]">
 				<h3 class="tracking-[8px] text-center text-[28px] lg:text-[32px] xl:text-[34px] font-bold text-[#FBFEA3] " style="-webkit-text-stroke: 1px #096B00;">
 					Movie

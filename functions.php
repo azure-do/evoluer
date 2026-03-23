@@ -133,18 +133,18 @@ function evoluer_enqueue_fc_movie_player_script() {
 }
 
 /**
- * Map artist segment in URL to fc-fanclub term slug (fanclub_a / fanclub_b).
+ * Map artist segment in URL to fc-fanclub term slug (fanclub_yonekichi / fanclub_shibuki).
  * Filter: evoluer_fanclub_artist_slug_to_term
  *
- * @return string 'fanclub_a'|'fanclub_b'
+ * @return string 'fanclub_yonekichi'|'fanclub_shibuki'
  */
 function evoluer_fanclub_term_slug_for_request() {
 	$map = apply_filters(
 		'evoluer_fanclub_artist_slug_to_term',
 		array(
-			// fanclub_a = 中村米吉（yonekichi） / fanclub_b = 紫吹（shibuki）
-			'yonekichi' => 'fanclub_a',
-			'shibuki'   => 'fanclub_b',
+			// fanclub_yonekichi = 中村米吉（yonekichi） / fanclub_shibuki = 紫吹（shibuki）
+			'yonekichi' => 'fanclub_yonekichi',
+			'shibuki'   => 'fanclub_shibuki',
 		)
 	);
 
@@ -161,29 +161,49 @@ function evoluer_fanclub_term_slug_for_request() {
 		return $map[ $parts[0] ];
 	}
 
-	// Fallback: EFM page IDs (legacy hub pages)
+	// Fallback: EFM page IDs (member hub pages)
 	if ( is_page() ) {
 		$pid         = (int) get_queried_object_id();
-		$fanclub_a_id = (int) get_option( 'efm_page_fanclub_a_id', 0 );
-		$fanclub_b_id = (int) get_option( 'efm_page_fanclub_b_id', 0 );
-		if ( $pid > 0 && $fanclub_a_id > 0 && $pid === $fanclub_a_id ) {
-			return 'fanclub_a';
+		$fanclub_y_id = (int) get_option( 'efm_page_fanclub_yonekichi_id', 0 );
+		$fanclub_s_id = (int) get_option( 'efm_page_fanclub_shibuki_id', 0 );
+		if ( $pid > 0 && $fanclub_y_id > 0 && $pid === $fanclub_y_id ) {
+			return 'fanclub_yonekichi';
 		}
-		if ( $pid > 0 && $fanclub_b_id > 0 && $pid === $fanclub_b_id ) {
-			return 'fanclub_b';
+		if ( $pid > 0 && $fanclub_s_id > 0 && $pid === $fanclub_s_id ) {
+			return 'fanclub_shibuki';
 		}
 	}
 
 	$user = wp_get_current_user();
-	if ( $user && $user->exists() && in_array( 'fanclub_b', (array) $user->roles, true ) ) {
-		return 'fanclub_b';
+	if ( $user && $user->exists() ) {
+		$roles = (array) $user->roles;
+		if ( in_array( 'fanclub_shibuki', $roles, true ) ) {
+			return 'fanclub_shibuki';
+		}
 	}
 
-	return 'fanclub_a';
+	return 'fanclub_yonekichi';
 }
 
 /**
- * Base URL for current artist hub (e.g. /fanclub/yonekichi/ = fanclub_a) for "もっと見る" links.
+ * Return taxonomy term slugs to query for the current request.
+ *
+ * @return array<int, string>
+ */
+function evoluer_fanclub_term_slugs_for_request() {
+	$term = function_exists( 'evoluer_fanclub_term_slug_for_request' )
+		? evoluer_fanclub_term_slug_for_request()
+		: 'fanclub_yonekichi';
+
+	if ( 'fanclub_shibuki' === $term ) {
+		return array( 'fanclub_shibuki' );
+	}
+
+	return array( 'fanclub_yonekichi' );
+}
+
+/**
+ * Base URL for current artist hub (e.g. /fanclub/yonekichi/) for "もっと見る" links.
  *
  * @return string Trailing slash URL.
  */
@@ -191,8 +211,8 @@ function evoluer_fanclub_artist_base_url() {
 	$map = apply_filters(
 		'evoluer_fanclub_artist_slug_to_term',
 		array(
-			'yonekichi' => 'fanclub_a',
-			'shibuki'   => 'fanclub_b',
+			'yonekichi' => 'fanclub_yonekichi',
+			'shibuki'   => 'fanclub_shibuki',
 		)
 	);
 
@@ -209,19 +229,22 @@ function evoluer_fanclub_artist_base_url() {
 
 	if ( is_page() ) {
 		$pid         = (int) get_queried_object_id();
-		$fanclub_a_id = (int) get_option( 'efm_page_fanclub_a_id', 0 );
-		$fanclub_b_id = (int) get_option( 'efm_page_fanclub_b_id', 0 );
-		if ( $pid > 0 && $fanclub_a_id > 0 && $pid === $fanclub_a_id ) {
+		$fanclub_y_id = (int) get_option( 'efm_page_fanclub_yonekichi_id', 0 );
+		$fanclub_s_id = (int) get_option( 'efm_page_fanclub_shibuki_id', 0 );
+		if ( $pid > 0 && $fanclub_y_id > 0 && $pid === $fanclub_y_id ) {
 			return trailingslashit( home_url( '/fanclub/yonekichi/' ) );
 		}
-		if ( $pid > 0 && $fanclub_b_id > 0 && $pid === $fanclub_b_id ) {
+		if ( $pid > 0 && $fanclub_s_id > 0 && $pid === $fanclub_s_id ) {
 			return trailingslashit( home_url( '/fanclub/shibuki/' ) );
 		}
 	}
 
 	$user = wp_get_current_user();
-	if ( $user && $user->exists() && in_array( 'fanclub_b', (array) $user->roles, true ) ) {
+	if ( $user && $user->exists() ) {
+		$roles = (array) $user->roles;
+		if ( in_array( 'fanclub_shibuki', $roles, true ) ) {
 		return trailingslashit( home_url( '/fanclub/shibuki/' ) );
+	}
 	}
 
 	return trailingslashit( home_url( '/fanclub/yonekichi/' ) );
@@ -242,7 +265,7 @@ function evoluer_fanclub_member_display_sama() {
 		return $u && $u->exists() ? $u->display_name : 'Member';
 	}
 
-	$term = function_exists( 'evoluer_fanclub_term_slug_for_request' ) ? evoluer_fanclub_term_slug_for_request() : 'fanclub_a';
+	$term = function_exists( 'evoluer_fanclub_term_slug_for_request' ) ? evoluer_fanclub_term_slug_for_request() : 'fanclub_yonekichi';
 	$plan = EFM_Membership::plan_type_from_fanclub_term_slug( $term );
 	$row  = EFM_Membership::get_active_member_row_for_plan( get_current_user_id(), $plan );
 	if ( ! $row ) {
@@ -267,7 +290,7 @@ function evoluer_fanclub_member_period_notice_html() {
 		return '';
 	}
 
-	$term = function_exists( 'evoluer_fanclub_term_slug_for_request' ) ? evoluer_fanclub_term_slug_for_request() : 'fanclub_a';
+	$term = function_exists( 'evoluer_fanclub_term_slug_for_request' ) ? evoluer_fanclub_term_slug_for_request() : 'fanclub_yonekichi';
 	$plan = EFM_Membership::plan_type_from_fanclub_term_slug( $term );
 	$row  = EFM_Membership::get_active_member_row_for_plan( get_current_user_id(), $plan );
 	if ( ! $row ) {
@@ -355,10 +378,24 @@ function evoluer_fanclub_fc_movie_archive_url() {
 }
 
 /**
- * フッター等：アーティスト固定の一覧 URL（中村米吉=yonekichi=fanclub_a / 紫吹=shibuki=fanclub_b）。
+ * Back button HTML to current fanclub hub (/fanclub/{artist}/).
+ *
+ * @param string $label Button label.
+ * @return string
+ */
+function evoluer_fanclub_back_to_hub_button_html( $label = 'ファンクラブTOPへ戻る' ) {
+	$url = function_exists( 'evoluer_fanclub_artist_base_url' )
+		? evoluer_fanclub_artist_base_url()
+		: home_url( '/fanclub/' );
+
+	return '<a href="' . esc_url( $url ) . '" class="inline-flex items-center gap-[6px] !text-[#13AA05] text-[14px] md:text-[15px] underline underline-offset-[3px] hover:opacity-80"><span> ‹ </span><span>' . esc_html( $label ) . '</span></a>';
+}
+
+/**
+ * フッター等：アーティスト固定の一覧 URL（中村米吉=yonekichi=fanclub_yonekichi / 紫吹=shibuki=fanclub_shibuki）。
  * 文脈依存の evoluer_fanclub_*_archive_url() とは別に、列ごとに明示する。
  *
- * @param string $artist_slug `yonekichi`（中村米吉=fanclub_a）|`shibuki`（紫吹=fanclub_b）
+ * @param string $artist_slug `yonekichi`（中村米吉=fanclub_yonekichi）|`shibuki`（紫吹=fanclub_shibuki）
  * @param string $segment     `news`|`ticket`|`movie`|`gallery`
  * @return string /fanclub/{artist}/{segment}/
  */
@@ -424,6 +461,16 @@ function add_files()
 		wp_enqueue_script('cdn-jquery', '//ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js', array(), '', true);
 		wp_enqueue_script('viewportjs', get_template_directory_uri() . '/assets/js/viewport-mini.js', array(), false, true);
 		wp_enqueue_script('commonjs', get_template_directory_uri() . '/assets/js/common.js', array(), false, true);
+		$offcanvas_js = get_template_directory() . '/assets/js/header-offcanvas.js';
+		if ( file_exists( $offcanvas_js ) ) {
+			wp_enqueue_script(
+				'evoluer-header-offcanvas',
+				get_template_directory_uri() . '/assets/js/header-offcanvas.js',
+				array(),
+				filemtime( $offcanvas_js ),
+				true
+			);
+		}
 
 		if (is_home() || is_page('feature')) {
 			wp_enqueue_script('indexjs', get_template_directory_uri() . '/assets/js/index.js', array(), false, true);
@@ -685,7 +732,7 @@ function custom_post_types()
 	);
 	register_post_type($slug_nf, $option_nf);
 
-	// ファンクラブ種別（Fanclub A/B）カテゴリ：fcnews 等をA/Bで振り分ける
+	// ファンクラブ種別カテゴリ（中村米吉/紫吹）カテゴリ：fc-fanclub を振り分ける
 	$tax_label = 'ファンクラブ カテゴリー';
 	$tax_slug  = 'fc-fanclub';
 	$args_tf   = array(
@@ -713,15 +760,17 @@ function custom_post_types()
 	// Bind this taxonomy to fanclub news/gallery/movie/ticket post types.
 	register_taxonomy($tax_slug, array( EVOLUER_PT_FANCLUB_NEWS, 'fc-gallery', 'fc-movie', EVOLUER_PT_FANCLUB_TICKET ), $args_tf);
 
-	// Create Fanclub A/B terms if they don't exist yet.
-	$term_a = term_exists('fanclub_a', $tax_slug);
-	if (0 === $term_a || null === $term_a) {
-		wp_insert_term('ファンクラブA', $tax_slug, array('slug' => 'fanclub_a'));
+	// Create terms (new slugs) if they don't exist yet.
+	$term_y = term_exists('fanclub_yonekichi', $tax_slug);
+	if (0 === $term_y || null === $term_y) {
+		wp_insert_term('中村米吉 official fan club', $tax_slug, array('slug' => 'fanclub_yonekichi'));
 	}
-	$term_b = term_exists('fanclub_b', $tax_slug);
-	if (0 === $term_b || null === $term_b) {
-		wp_insert_term('ファンクラブB', $tax_slug, array('slug' => 'fanclub_b'));
+	$term_s = term_exists('fanclub_shibuki', $tax_slug);
+	if (0 === $term_s || null === $term_s) {
+		wp_insert_term('紫吹 official fan club', $tax_slug, array('slug' => 'fanclub_shibuki'));
 	}
+
+	// Legacy term slugs intentionally removed; only new slugs are supported.
 
 	$label    = '出演情報';
 	$slug_s   = 'schedule';

@@ -43,15 +43,16 @@ function evoluer_fanclub_url_segment_for_post_type( $post_type ) {
 }
 
 /**
- * fc-fanclub ターム slug → アーティストURLスラッグ（yonekichi = A 中村米吉 / shibuki = B 紫吹）。
+ * fc-fanclub ターム slug → アーティストURLスラッグ（yonekichi = 中村米吉 / shibuki = 紫吹）。
  *
- * @param string $term_slug fanclub_a|fanclub_b.
+ * @param string $term_slug fanclub_yonekichi|fanclub_shibuki.
  * @return string
  */
 function evoluer_fanclub_term_slug_to_artist_slug( $term_slug ) {
 	$map = array(
-		'fanclub_a' => 'yonekichi',
-		'fanclub_b' => 'shibuki',
+		// new slugs
+		'fanclub_yonekichi' => 'yonekichi',
+		'fanclub_shibuki'   => 'shibuki',
 	);
 
 	return isset( $map[ $term_slug ] ) ? $map[ $term_slug ] : 'yonekichi';
@@ -65,7 +66,8 @@ function evoluer_fanclub_term_slug_to_artist_slug( $term_slug ) {
 function evoluer_fanclub_default_artist_slug_for_redirect() {
 	if ( is_user_logged_in() ) {
 		$user = wp_get_current_user();
-		if ( $user && in_array( 'fanclub_b', (array) $user->roles, true ) ) {
+		$roles = $user ? (array) $user->roles : array();
+		if ( in_array( 'fanclub_shibuki', $roles, true ) ) {
 			return 'shibuki';
 		}
 	}
@@ -228,8 +230,8 @@ add_action(
 		$map = apply_filters(
 			'evoluer_fanclub_artist_slug_to_term',
 			array(
-				'yonekichi' => 'fanclub_a',
-				'shibuki'   => 'fanclub_b',
+				'yonekichi' => 'fanclub_yonekichi',
+				'shibuki'   => 'fanclub_shibuki',
 			)
 		);
 
@@ -237,7 +239,10 @@ add_action(
 			return;
 		}
 
-		$term_slug = $map[ $artist ];
+		$term_slug  = $map[ $artist ];
+		$term_slugs = ( 'fanclub_shibuki' === $term_slug )
+			? array( 'fanclub_shibuki' )
+			: array( 'fanclub_yonekichi' );
 
 		$query->set(
 			'tax_query',
@@ -245,7 +250,7 @@ add_action(
 				array(
 					'taxonomy' => 'fc-fanclub',
 					'field'    => 'slug',
-					'terms'    => array( $term_slug ),
+					'terms'    => $term_slugs,
 				),
 			)
 		);
@@ -270,8 +275,8 @@ add_action(
 		$map = apply_filters(
 			'evoluer_fanclub_artist_slug_to_term',
 			array(
-				'yonekichi' => 'fanclub_a',
-				'shibuki'   => 'fanclub_b',
+				'yonekichi' => 'fanclub_yonekichi',
+				'shibuki'   => 'fanclub_shibuki',
 			)
 		);
 
@@ -279,10 +284,13 @@ add_action(
 			return;
 		}
 
-		$term_slug = $map[ $artist ];
+		$term_slug  = $map[ $artist ];
+		$term_slugs = ( 'fanclub_shibuki' === $term_slug )
+			? array( 'fanclub_shibuki' )
+			: array( 'fanclub_yonekichi' );
 		$post_id   = (int) get_queried_object_id();
 
-		if ( $post_id <= 0 || ! has_term( $term_slug, 'fc-fanclub', $post_id ) ) {
+		if ( $post_id <= 0 || ! has_term( $term_slugs, 'fc-fanclub', $post_id ) ) {
 			global $wp_query;
 			$wp_query->set_404();
 			status_header( 404 );

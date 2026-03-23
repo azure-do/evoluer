@@ -17,8 +17,15 @@ get_header( 'fanclub-member' );
 		?>
 	</div>
 
-	<section class="w-full pt-[60px] pb-[80px]">
+	<section class="w-full pt-0 lg:pt-[60px] pb-[80px]">
 		<div class="w-full max-w-[1130px] mx-auto px-[30px]">
+			<div class="mb-[16px] md:mb-[20px]">
+				<?php
+				if ( function_exists( 'evoluer_fanclub_back_to_hub_button_html' ) ) {
+					echo evoluer_fanclub_back_to_hub_button_html(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				}
+				?>
+			</div>
 			<div class="relative mb-[32px] xl:mb-[60px]">
 				<h3 class="tracking-[8px] text-center text-[28px] lg:text-[32px] xl:text-[34px] font-bold text-[#FBFEA3] " style="-webkit-text-stroke: 1px #096B00;">
 					Movie

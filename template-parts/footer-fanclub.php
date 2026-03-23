@@ -56,7 +56,7 @@
           </ul>
         </div>
 
-        <!-- Fan club 1（中村米吉 / fanclub_a） -->
+        <!-- Fan club 1（中村米吉 / fanclub_yonekichi） -->
         <div class="!space-y-14">
           <h3 class="text-[18px] font-medium tracking-[-1px] text-[#676767] h-[32px]">
             中村米吉<br>official fan club
@@ -70,7 +70,7 @@
           </ul>
         </div>
 
-        <!-- Fan club 2（紫吹 / fanclub_b） -->
+        <!-- Fan club 2（紫吹 / fanclub_shibuki） -->
         <div class="!space-y-14">
           <h3 class="text-[18px] font-medium tracking-[-1px] text-[#676767] h-[32px]">
             紫吹<br>official fan club
