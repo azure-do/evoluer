@@ -55,19 +55,23 @@ $logout_url = wp_logout_url(home_url('/fanclub/login/'));
 						<li>
 							<a href="<?php echo esc_url(home_url('/contact/')); ?>" class="header_list_item text-center en-font px-[8px] xl:px-[16px] text-[16px] underline text-inherit inline-block">Contact US</a>
 						</li>
-						<li class="group relative flex max-w-[min(200px,28vw)] items-center shrink-0 ml-1">
-							<span class="inline-flex items-center gap-2 px-[8px] xl:px-[12px]">
-								<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true" class="text-[#333] shrink-0">
-									<circle cx="12" cy="8" r="3.2"></circle>
-									<path d="M5 19c.7-3.1 2.9-4.8 7-4.8s6.3 1.7 7 4.8"></path>
-								</svg>
-								<span class="en-font text-[16px] text-[#333] leading-none truncate"><?php echo esc_html( $member_name ); ?></span>
-							</span>
-							<a
-								href="<?php echo esc_url( $logout_url ); ?>"
-								class="absolute left-[8px] top-full z-20 mt-2 whitespace-nowrap text-[14px] text-[#13AA05] underline underline-offset-[3px] opacity-0 pointer-events-none transition-opacity duration-150 group-hover:opacity-100 group-hover:pointer-events-auto group-focus-within:opacity-100 group-focus-within:pointer-events-auto">
-								Logout
-							</a>
+						<li class="relative flex max-w-[min(220px,32vw)] items-center shrink-0 ml-1">
+							<details class="js-member-dropdown group relative">
+								<summary class="list-none inline-flex cursor-pointer items-center gap-2 px-[8px] xl:px-[12px]">
+									<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true" class="text-[#333] shrink-0">
+										<circle cx="12" cy="8" r="3.2"></circle>
+										<path d="M5 19c.7-3.1 2.9-4.8 7-4.8s6.3 1.7 7 4.8"></path>
+									</svg>
+									<span class="en-font text-[16px] text-[#333] leading-none truncate"><?php echo esc_html( $member_name ); ?></span>
+								</summary>
+								<div class="absolute left-[8px] top-full z-20 mt-2 rounded-[4px] border border-[#D9D9D9] bg-white px-3 py-2 shadow-[0_4px_14px_rgba(0,0,0,0.1)]">
+									<a
+										href="<?php echo esc_url( $logout_url ); ?>"
+										class="whitespace-nowrap text-[14px] text-[#13AA05] underline underline-offset-[3px]">
+										ログアウト
+									</a>
+								</div>
+							</details>
 						</li>
 					</ul>
 				</nav>
@@ -81,6 +85,29 @@ $logout_url = wp_logout_url(home_url('/fanclub/login/'));
 				</div>
 			</div>
 		</header>
+		<script>
+			document.addEventListener('DOMContentLoaded', function () {
+				var dropdown = document.querySelector('.js-member-dropdown');
+				if (!dropdown) {
+					return;
+				}
+
+				document.addEventListener('click', function (event) {
+					if (!dropdown.open) {
+						return;
+					}
+					if (!dropdown.contains(event.target)) {
+						dropdown.open = false;
+					}
+				});
+
+				document.addEventListener('keydown', function (event) {
+					if (event.key === 'Escape') {
+						dropdown.open = false;
+					}
+				});
+			});
+		</script>
 		<?php get_template_part('template-parts/header-modal', 'fanclub'); ?>
 
 		<?php

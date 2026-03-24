@@ -93,10 +93,10 @@
             </div>
           </div>
         </div>
-        <a href="<?php echo esc_url(home_url('/fanclub/register/')); ?>">
+        <a href="<?php echo esc_url(home_url('/fanclub/login/')); ?>">
           <button class="w-full md:w-auto bg-[#13AA05] hover:bg-[#0F9105] text-white rounded-[8px] text-[16px] lg:text-[18px] xl:text-[20px] font-bold py-4 px-[30px] md:px-[40px] xl:px-[88px] mt-12 lg:mt-16 xl:mt-20 transition-colors duration-200 shadow cursor-pointer"
             type="button">
-            入会手続きに進む
+            今すぐログイン
           </button>
         </a>
       </div>

@@ -108,16 +108,11 @@ if (! defined('ABSPATH')) {
 		</div>
 
 		<!-- Login/Register buttons -->
-		<div class="mt-8 flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 md:gap-6 lg:gap-8 xl:gap-10">
+		<div class="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 md:gap-6 lg:gap-8 xl:gap-10 mt-8 md:mt-[30px] lg:mt-[40px] xl:mt-[50px]">
 			<a
 				href="<?php echo esc_url(home_url('/fanclub/login/')); ?>"
 				class="inline-flex items-center justify-center rounded-[10px] w-full max-w-[400px] text-center px-6 py-3 border border-[#13AA05] !text-[#13AA05] text-[20px] lg:text-[24px] xl:text-[28px] font-medium bg-white hover:bg-[#F5FFF5]">
 				ログイン
-			</a>
-			<a
-				href="<?php echo esc_url(home_url('/fanclub/register/')); ?>"
-				class="inline-flex items-center justify-center rounded-[10px] w-full max-w-[400px] text-center px-6 py-3 border border-[#13AA05] bg-[#13AA05] !text-white text-[20px] lg:text-[24px] xl:text-[28px] font-medium hover:bg-[#0F9105]">
-				新規入会
 			</a>
 		</div>
 	</nav>

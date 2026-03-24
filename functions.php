@@ -14,26 +14,27 @@ remove_action('wp_head', 'wp_generator');					// Display the XHTML generator tha
 remove_action('wp_head', 'adjacent_posts_rel_link_wp_head', 10);
 
 // ファンクラブ用カスタム投稿タイプ（内部名）
-if ( ! defined( 'EVOLUER_PT_FANCLUB_NEWS' ) ) {
-	define( 'EVOLUER_PT_FANCLUB_NEWS', 'fcnews' );
+if (! defined('EVOLUER_PT_FANCLUB_NEWS')) {
+	define('EVOLUER_PT_FANCLUB_NEWS', 'fcnews');
 }
-if ( ! defined( 'EVOLUER_PT_FANCLUB_TICKET' ) ) {
-	define( 'EVOLUER_PT_FANCLUB_TICKET', 'ticket' );
+if (! defined('EVOLUER_PT_FANCLUB_TICKET')) {
+	define('EVOLUER_PT_FANCLUB_TICKET', 'ticket');
 }
 
 /**
  * fc-news / fc-ticket から fcnews / ticket へ DB を移行（1回のみ）。
  */
-function evoluer_maybe_migrate_fanclub_cpt_slugs() {
-	$version = (int) get_option( 'evoluer_fanclub_cpt_slug_version', 0 );
-	if ( $version >= 2 ) {
+function evoluer_maybe_migrate_fanclub_cpt_slugs()
+{
+	$version = (int) get_option('evoluer_fanclub_cpt_slug_version', 0);
+	if ($version >= 2) {
 		return;
 	}
 	global $wpdb;
-	$wpdb->update( $wpdb->posts, array( 'post_type' => EVOLUER_PT_FANCLUB_NEWS ), array( 'post_type' => 'fc-news' ), array( '%s' ), array( '%s' ) );
-	$wpdb->update( $wpdb->posts, array( 'post_type' => EVOLUER_PT_FANCLUB_TICKET ), array( 'post_type' => 'fc-ticket' ), array( '%s' ), array( '%s' ) );
-	update_option( 'evoluer_fanclub_cpt_slug_version', 2 );
-	update_option( 'evoluer_flush_rewrite_rules_flag', '1' );
+	$wpdb->update($wpdb->posts, array('post_type' => EVOLUER_PT_FANCLUB_NEWS), array('post_type' => 'fc-news'), array('%s'), array('%s'));
+	$wpdb->update($wpdb->posts, array('post_type' => EVOLUER_PT_FANCLUB_TICKET), array('post_type' => 'fc-ticket'), array('%s'), array('%s'));
+	update_option('evoluer_fanclub_cpt_slug_version', 2);
+	update_option('evoluer_flush_rewrite_rules_flag', '1');
 }
 
 /**
@@ -70,11 +71,12 @@ function page_is_ancestor_of($slug)
  *
  * @return string
  */
-function evoluer_get_fanclub_request_path() {
-	$path = trim( (string) parse_url( isset( $_SERVER['REQUEST_URI'] ) ? wp_unslash( $_SERVER['REQUEST_URI'] ) : '', PHP_URL_PATH ), '/' );
-	$site_path = trim( (string) parse_url( home_url( '/' ), PHP_URL_PATH ), '/' );
-	if ( $site_path !== '' && 0 === strpos( $path, $site_path . '/' ) ) {
-		$path = trim( substr( $path, strlen( $site_path ) ), '/' );
+function evoluer_get_fanclub_request_path()
+{
+	$path = trim((string) parse_url(isset($_SERVER['REQUEST_URI']) ? wp_unslash($_SERVER['REQUEST_URI']) : '', PHP_URL_PATH), '/');
+	$site_path = trim((string) parse_url(home_url('/'), PHP_URL_PATH), '/');
+	if ($site_path !== '' && 0 === strpos($path, $site_path . '/')) {
+		$path = trim(substr($path, strlen($site_path)), '/');
 	}
 	return $path;
 }
@@ -85,23 +87,24 @@ function evoluer_get_fanclub_request_path() {
  *
  * @return bool
  */
-function evoluer_should_enqueue_fc_movie_player() {
-	if ( is_post_type_archive( 'fc-movie' ) ) {
+function evoluer_should_enqueue_fc_movie_player()
+{
+	if (is_post_type_archive('fc-movie')) {
 		return true;
 	}
-	if ( is_page_template( array( 'page-movie.php', 'page-yonekichi.php', 'page-shibuki.php' ) ) ) {
+	if (is_page_template(array('page-movie.php', 'page-yonekichi.php', 'page-shibuki.php'))) {
 		return true;
 	}
 	$path = evoluer_get_fanclub_request_path();
-	if ( $path === '' ) {
+	if ($path === '') {
 		return false;
 	}
 	// Hub and all subpaths: /fanclub/yonekichi/ … /fanclub/shibuki/movie/ …
-	if ( preg_match( '#^fanclub/(yonekichi|shibuki)(/|$)#', $path ) ) {
+	if (preg_match('#^fanclub/(yonekichi|shibuki)(/|$)#', $path)) {
 		return true;
 	}
 	// Short URLs without fanclub prefix (theme rewrites)
-	if ( preg_match( '#^(yonekichi|shibuki)(/|$)#', $path ) ) {
+	if (preg_match('#^(yonekichi|shibuki)(/|$)#', $path)) {
 		return true;
 	}
 
@@ -113,13 +116,14 @@ function evoluer_should_enqueue_fc_movie_player() {
  *
  * @return void
  */
-function evoluer_enqueue_fc_movie_player_script() {
+function evoluer_enqueue_fc_movie_player_script()
+{
 	static $done = false;
-	if ( $done || is_admin() ) {
+	if ($done || is_admin()) {
 		return;
 	}
 	$file = get_template_directory() . '/assets/js/fc-movie-player.js';
-	if ( ! file_exists( $file ) ) {
+	if (! file_exists($file)) {
 		return;
 	}
 	$done = true;
@@ -127,7 +131,7 @@ function evoluer_enqueue_fc_movie_player_script() {
 		'evoluer-fc-movie-player',
 		get_template_directory_uri() . '/assets/js/fc-movie-player.js',
 		array(),
-		filemtime( $file ),
+		filemtime($file),
 		true
 	);
 }
@@ -138,7 +142,8 @@ function evoluer_enqueue_fc_movie_player_script() {
  *
  * @return string 'fanclub_yonekichi'|'fanclub_shibuki'
  */
-function evoluer_fanclub_term_slug_for_request() {
+function evoluer_fanclub_term_slug_for_request()
+{
 	$map = apply_filters(
 		'evoluer_fanclub_artist_slug_to_term',
 		array(
@@ -149,35 +154,35 @@ function evoluer_fanclub_term_slug_for_request() {
 	);
 
 	$path  = evoluer_get_fanclub_request_path();
-	$parts = array_values( array_filter( explode( '/', $path ) ) );
+	$parts = array_values(array_filter(explode('/', $path)));
 
 	// /fanclub/shibuki/gallery/ …
-	if ( isset( $parts[0], $parts[1] ) && 'fanclub' === $parts[0] && isset( $map[ $parts[1] ] ) ) {
-		return $map[ $parts[1] ];
+	if (isset($parts[0], $parts[1]) && 'fanclub' === $parts[0] && isset($map[$parts[1]])) {
+		return $map[$parts[1]];
 	}
 
 	// /shibuki/ … (no fanclub prefix)
-	if ( isset( $parts[0] ) && isset( $map[ $parts[0] ] ) ) {
-		return $map[ $parts[0] ];
+	if (isset($parts[0]) && isset($map[$parts[0]])) {
+		return $map[$parts[0]];
 	}
 
 	// Fallback: EFM page IDs (member hub pages)
-	if ( is_page() ) {
+	if (is_page()) {
 		$pid         = (int) get_queried_object_id();
-		$fanclub_y_id = (int) get_option( 'efm_page_fanclub_yonekichi_id', 0 );
-		$fanclub_s_id = (int) get_option( 'efm_page_fanclub_shibuki_id', 0 );
-		if ( $pid > 0 && $fanclub_y_id > 0 && $pid === $fanclub_y_id ) {
+		$fanclub_y_id = (int) get_option('efm_page_fanclub_yonekichi_id', 0);
+		$fanclub_s_id = (int) get_option('efm_page_fanclub_shibuki_id', 0);
+		if ($pid > 0 && $fanclub_y_id > 0 && $pid === $fanclub_y_id) {
 			return 'fanclub_yonekichi';
 		}
-		if ( $pid > 0 && $fanclub_s_id > 0 && $pid === $fanclub_s_id ) {
+		if ($pid > 0 && $fanclub_s_id > 0 && $pid === $fanclub_s_id) {
 			return 'fanclub_shibuki';
 		}
 	}
 
 	$user = wp_get_current_user();
-	if ( $user && $user->exists() ) {
+	if ($user && $user->exists()) {
 		$roles = (array) $user->roles;
-		if ( in_array( 'fanclub_shibuki', $roles, true ) ) {
+		if (in_array('fanclub_shibuki', $roles, true)) {
 			return 'fanclub_shibuki';
 		}
 	}
@@ -190,16 +195,17 @@ function evoluer_fanclub_term_slug_for_request() {
  *
  * @return array<int, string>
  */
-function evoluer_fanclub_term_slugs_for_request() {
-	$term = function_exists( 'evoluer_fanclub_term_slug_for_request' )
+function evoluer_fanclub_term_slugs_for_request()
+{
+	$term = function_exists('evoluer_fanclub_term_slug_for_request')
 		? evoluer_fanclub_term_slug_for_request()
 		: 'fanclub_yonekichi';
 
-	if ( 'fanclub_shibuki' === $term ) {
-		return array( 'fanclub_shibuki' );
+	if ('fanclub_shibuki' === $term) {
+		return array('fanclub_shibuki');
 	}
 
-	return array( 'fanclub_yonekichi' );
+	return array('fanclub_yonekichi');
 }
 
 /**
@@ -207,7 +213,8 @@ function evoluer_fanclub_term_slugs_for_request() {
  *
  * @return string Trailing slash URL.
  */
-function evoluer_fanclub_artist_base_url() {
+function evoluer_fanclub_artist_base_url()
+{
 	$map = apply_filters(
 		'evoluer_fanclub_artist_slug_to_term',
 		array(
@@ -217,37 +224,37 @@ function evoluer_fanclub_artist_base_url() {
 	);
 
 	$path  = evoluer_get_fanclub_request_path();
-	$parts = array_values( array_filter( explode( '/', $path ) ) );
+	$parts = array_values(array_filter(explode('/', $path)));
 
-	if ( isset( $parts[0], $parts[1] ) && 'fanclub' === $parts[0] && isset( $map[ $parts[1] ] ) ) {
-		return trailingslashit( home_url( '/fanclub/' . $parts[1] ) );
+	if (isset($parts[0], $parts[1]) && 'fanclub' === $parts[0] && isset($map[$parts[1]])) {
+		return trailingslashit(home_url('/fanclub/' . $parts[1]));
 	}
 
-	if ( isset( $parts[0] ) && isset( $map[ $parts[0] ] ) ) {
-		return trailingslashit( home_url( '/fanclub/' . $parts[0] ) );
+	if (isset($parts[0]) && isset($map[$parts[0]])) {
+		return trailingslashit(home_url('/fanclub/' . $parts[0]));
 	}
 
-	if ( is_page() ) {
+	if (is_page()) {
 		$pid         = (int) get_queried_object_id();
-		$fanclub_y_id = (int) get_option( 'efm_page_fanclub_yonekichi_id', 0 );
-		$fanclub_s_id = (int) get_option( 'efm_page_fanclub_shibuki_id', 0 );
-		if ( $pid > 0 && $fanclub_y_id > 0 && $pid === $fanclub_y_id ) {
-			return trailingslashit( home_url( '/fanclub/yonekichi/' ) );
+		$fanclub_y_id = (int) get_option('efm_page_fanclub_yonekichi_id', 0);
+		$fanclub_s_id = (int) get_option('efm_page_fanclub_shibuki_id', 0);
+		if ($pid > 0 && $fanclub_y_id > 0 && $pid === $fanclub_y_id) {
+			return trailingslashit(home_url('/fanclub/yonekichi/'));
 		}
-		if ( $pid > 0 && $fanclub_s_id > 0 && $pid === $fanclub_s_id ) {
-			return trailingslashit( home_url( '/fanclub/shibuki/' ) );
+		if ($pid > 0 && $fanclub_s_id > 0 && $pid === $fanclub_s_id) {
+			return trailingslashit(home_url('/fanclub/shibuki/'));
 		}
 	}
 
 	$user = wp_get_current_user();
-	if ( $user && $user->exists() ) {
+	if ($user && $user->exists()) {
 		$roles = (array) $user->roles;
-		if ( in_array( 'fanclub_shibuki', $roles, true ) ) {
-		return trailingslashit( home_url( '/fanclub/shibuki/' ) );
-	}
+		if (in_array('fanclub_shibuki', $roles, true)) {
+			return trailingslashit(home_url('/fanclub/shibuki/'));
+		}
 	}
 
-	return trailingslashit( home_url( '/fanclub/yonekichi/' ) );
+	return trailingslashit(home_url('/fanclub/yonekichi/'));
 }
 
 /**
@@ -255,24 +262,25 @@ function evoluer_fanclub_artist_base_url() {
  *
  * @return string
  */
-function evoluer_fanclub_member_display_sama() {
-	if ( ! is_user_logged_in() ) {
+function evoluer_fanclub_member_display_sama()
+{
+	if (! is_user_logged_in()) {
 		return 'Member';
 	}
-	if ( ! class_exists( 'EFM_Membership' ) ) {
+	if (! class_exists('EFM_Membership')) {
 		$u = wp_get_current_user();
 
 		return $u && $u->exists() ? $u->display_name : 'Member';
 	}
 
-	$term = function_exists( 'evoluer_fanclub_term_slug_for_request' ) ? evoluer_fanclub_term_slug_for_request() : 'fanclub_yonekichi';
-	$plan = EFM_Membership::plan_type_from_fanclub_term_slug( $term );
-	$row  = EFM_Membership::get_active_member_row_for_plan( get_current_user_id(), $plan );
-	if ( ! $row ) {
-		$row = EFM_Membership::get_any_active_member_row( get_current_user_id() );
+	$term = function_exists('evoluer_fanclub_term_slug_for_request') ? evoluer_fanclub_term_slug_for_request() : 'fanclub_yonekichi';
+	$plan = EFM_Membership::plan_type_from_fanclub_term_slug($term);
+	$row  = EFM_Membership::get_active_member_row_for_plan(get_current_user_id(), $plan);
+	if (! $row) {
+		$row = EFM_Membership::get_any_active_member_row(get_current_user_id());
 	}
-	if ( $row ) {
-		return EFM_Membership::format_member_number_sama( (int) $row->id );
+	if ($row) {
+		return EFM_Membership::format_member_number_sama((int) $row->id);
 	}
 
 	$u = wp_get_current_user();
@@ -285,34 +293,35 @@ function evoluer_fanclub_member_display_sama() {
  *
  * @return string HTML（空文字のときは非表示）。
  */
-function evoluer_fanclub_member_period_notice_html() {
-	if ( ! is_user_logged_in() || ! class_exists( 'EFM_Membership' ) ) {
+function evoluer_fanclub_member_period_notice_html()
+{
+	if (! is_user_logged_in() || ! class_exists('EFM_Membership')) {
 		return '';
 	}
 
-	$term = function_exists( 'evoluer_fanclub_term_slug_for_request' ) ? evoluer_fanclub_term_slug_for_request() : 'fanclub_yonekichi';
-	$plan = EFM_Membership::plan_type_from_fanclub_term_slug( $term );
-	$row  = EFM_Membership::get_active_member_row_for_plan( get_current_user_id(), $plan );
-	if ( ! $row ) {
-		$row = EFM_Membership::get_any_active_member_row( get_current_user_id() );
+	$term = function_exists('evoluer_fanclub_term_slug_for_request') ? evoluer_fanclub_term_slug_for_request() : 'fanclub_yonekichi';
+	$plan = EFM_Membership::plan_type_from_fanclub_term_slug($term);
+	$row  = EFM_Membership::get_active_member_row_for_plan(get_current_user_id(), $plan);
+	if (! $row) {
+		$row = EFM_Membership::get_any_active_member_row(get_current_user_id());
 	}
-	if ( ! $row || empty( $row->payment_end ) ) {
+	if (! $row || empty($row->payment_end)) {
 		return '';
 	}
 
-	$end = strtotime( $row->payment_end );
-	if ( ! $end ) {
+	$end = strtotime($row->payment_end);
+	if (! $end) {
 		return '';
 	}
 
-	$days_left = (int) floor( ( $end - time() ) / DAY_IN_SECONDS );
-	if ( $days_left < 0 || $days_left > 30 ) {
+	$days_left = (int) floor(($end - time()) / DAY_IN_SECONDS);
+	if ($days_left < 0 || $days_left > 30) {
 		return '';
 	}
 
-	$days_show = max( 0, $days_left );
+	$days_show = max(0, $days_left);
 
-	return '<p class="text-[#7A7A7A] text-[14px] md:text-[16px] mb-[26px]">会員期間は今後' . esc_html( (string) $days_show ) . '日残りしました。</p>';
+	return '<p class="text-[#7A7A7A] text-[14px] md:text-[16px] mb-[26px]">会員期間は今後' . esc_html((string) $days_show) . '日残りしました。</p>';
 }
 
 /**
@@ -320,10 +329,11 @@ function evoluer_fanclub_member_period_notice_html() {
  *
  * @return string
  */
-function evoluer_fanclub_fcnews_archive_url() {
-	$base = untrailingslashit( evoluer_fanclub_artist_base_url() );
+function evoluer_fanclub_fcnews_archive_url()
+{
+	$base = untrailingslashit(evoluer_fanclub_artist_base_url());
 
-	return trailingslashit( $base . '/news' );
+	return trailingslashit($base . '/news');
 }
 
 /**
@@ -331,10 +341,11 @@ function evoluer_fanclub_fcnews_archive_url() {
  *
  * @return string
  */
-function evoluer_fanclub_ticket_archive_url() {
-	$base = untrailingslashit( evoluer_fanclub_artist_base_url() );
+function evoluer_fanclub_ticket_archive_url()
+{
+	$base = untrailingslashit(evoluer_fanclub_artist_base_url());
 
-	return trailingslashit( $base . '/ticket' );
+	return trailingslashit($base . '/ticket');
 }
 
 /**
@@ -342,7 +353,8 @@ function evoluer_fanclub_ticket_archive_url() {
  *
  * @return string
  */
-function evoluer_fanclub_news_list_url() {
+function evoluer_fanclub_news_list_url()
+{
 	return evoluer_fanclub_fcnews_archive_url();
 }
 
@@ -351,7 +363,8 @@ function evoluer_fanclub_news_list_url() {
  *
  * @return string
  */
-function evoluer_fanclub_ticket_list_url() {
+function evoluer_fanclub_ticket_list_url()
+{
 	return evoluer_fanclub_ticket_archive_url();
 }
 
@@ -360,10 +373,11 @@ function evoluer_fanclub_ticket_list_url() {
  *
  * @return string
  */
-function evoluer_fanclub_fcgallery_archive_url() {
-	$base = untrailingslashit( evoluer_fanclub_artist_base_url() );
+function evoluer_fanclub_fcgallery_archive_url()
+{
+	$base = untrailingslashit(evoluer_fanclub_artist_base_url());
 
-	return trailingslashit( $base . '/gallery' );
+	return trailingslashit($base . '/gallery');
 }
 
 /**
@@ -371,10 +385,11 @@ function evoluer_fanclub_fcgallery_archive_url() {
  *
  * @return string
  */
-function evoluer_fanclub_fc_movie_archive_url() {
-	$base = untrailingslashit( evoluer_fanclub_artist_base_url() );
+function evoluer_fanclub_fc_movie_archive_url()
+{
+	$base = untrailingslashit(evoluer_fanclub_artist_base_url());
 
-	return trailingslashit( $base . '/movie' );
+	return trailingslashit($base . '/movie');
 }
 
 /**
@@ -383,12 +398,13 @@ function evoluer_fanclub_fc_movie_archive_url() {
  * @param string $label Button label.
  * @return string
  */
-function evoluer_fanclub_back_to_hub_button_html( $label = 'ファンクラブTOPへ戻る' ) {
-	$url = function_exists( 'evoluer_fanclub_artist_base_url' )
+function evoluer_fanclub_back_to_hub_button_html($label = 'ファンクラブTOPへ戻る')
+{
+	$url = function_exists('evoluer_fanclub_artist_base_url')
 		? evoluer_fanclub_artist_base_url()
-		: home_url( '/fanclub/' );
+		: home_url('/fanclub/');
 
-	return '<a href="' . esc_url( $url ) . '" class="inline-flex items-center gap-[6px] !text-[#13AA05] text-[14px] md:text-[15px] underline underline-offset-[3px] hover:opacity-80"><span> ‹ </span><span>' . esc_html( $label ) . '</span></a>';
+	return '<a href="' . esc_url($url) . '" class="inline-flex items-center gap-[6px] !text-[#13AA05] text-[14px] md:text-[15px] underline underline-offset-[3px] hover:opacity-80"><span> ‹ </span><span>' . esc_html($label) . '</span></a>';
 }
 
 /**
@@ -399,17 +415,18 @@ function evoluer_fanclub_back_to_hub_button_html( $label = 'ファンクラブTO
  * @param string $segment     `news`|`ticket`|`movie`|`gallery`
  * @return string /fanclub/{artist}/{segment}/
  */
-function evoluer_fanclub_hub_section_url( $artist_slug, $segment ) {
-	$artists = apply_filters( 'evoluer_fanclub_artist_slugs', array( 'yonekichi', 'shibuki' ) );
-	if ( ! in_array( $artist_slug, $artists, true ) ) {
+function evoluer_fanclub_hub_section_url($artist_slug, $segment)
+{
+	$artists = apply_filters('evoluer_fanclub_artist_slugs', array('yonekichi', 'shibuki'));
+	if (! in_array($artist_slug, $artists, true)) {
 		$artist_slug = 'yonekichi';
 	}
-	$segments = array( 'news', 'ticket', 'movie', 'gallery' );
-	if ( ! in_array( $segment, $segments, true ) ) {
-		return trailingslashit( home_url( '/fanclub/' . $artist_slug ) );
+	$segments = array('news', 'ticket', 'movie', 'gallery');
+	if (! in_array($segment, $segments, true)) {
+		return trailingslashit(home_url('/fanclub/' . $artist_slug));
 	}
 
-	return trailingslashit( home_url( '/fanclub/' . $artist_slug . '/' . $segment ) );
+	return trailingslashit(home_url('/fanclub/' . $artist_slug . '/' . $segment));
 }
 
 
@@ -462,12 +479,12 @@ function add_files()
 		wp_enqueue_script('viewportjs', get_template_directory_uri() . '/assets/js/viewport-mini.js', array(), false, true);
 		wp_enqueue_script('commonjs', get_template_directory_uri() . '/assets/js/common.js', array(), false, true);
 		$offcanvas_js = get_template_directory() . '/assets/js/header-offcanvas.js';
-		if ( file_exists( $offcanvas_js ) ) {
+		if (file_exists($offcanvas_js)) {
 			wp_enqueue_script(
 				'evoluer-header-offcanvas',
 				get_template_directory_uri() . '/assets/js/header-offcanvas.js',
 				array(),
-				filemtime( $offcanvas_js ),
+				filemtime($offcanvas_js),
 				true
 			);
 		}
@@ -487,7 +504,7 @@ function add_files()
 		elseif (is_singular('artist')) {
 			wp_enqueue_script('slickjs', get_template_directory_uri() . '/assets/js/slick.min.js', array(), false, true);
 			wp_enqueue_script('artistjs', get_template_directory_uri() . '/assets/js/artist.js', array(), false, true);
-		} elseif ( evoluer_should_enqueue_fc_movie_player() ) {
+		} elseif (evoluer_should_enqueue_fc_movie_player()) {
 			evoluer_enqueue_fc_movie_player_script();
 		}
 	}
@@ -758,7 +775,7 @@ function custom_post_types()
 		),
 	);
 	// Bind this taxonomy to fanclub news/gallery/movie/ticket post types.
-	register_taxonomy($tax_slug, array( EVOLUER_PT_FANCLUB_NEWS, 'fc-gallery', 'fc-movie', EVOLUER_PT_FANCLUB_TICKET ), $args_tf);
+	register_taxonomy($tax_slug, array(EVOLUER_PT_FANCLUB_NEWS, 'fc-gallery', 'fc-movie', EVOLUER_PT_FANCLUB_TICKET), $args_tf);
 
 	// Create terms (new slugs) if they don't exist yet.
 	$term_y = term_exists('fanclub_yonekichi', $tax_slug);
@@ -855,15 +872,15 @@ function custom_post_types()
 	);
 	register_taxonomy('schedule-cat', $slug_s, $args_s_c);
 }
-add_action( 'init', 'custom_post_types' );
+add_action('init', 'custom_post_types');
 
 /** スラッグ変更後にリライトルールを再生成 */
 add_action(
 	'init',
 	static function () {
-		if ( get_option( 'evoluer_flush_rewrite_rules_flag' ) ) {
-			flush_rewrite_rules( false );
-			delete_option( 'evoluer_flush_rewrite_rules_flag' );
+		if (get_option('evoluer_flush_rewrite_rules_flag')) {
+			flush_rewrite_rules(false);
+			delete_option('evoluer_flush_rewrite_rules_flag');
 		}
 	},
 	99
@@ -872,26 +889,26 @@ add_action(
 /** ファンクラブ NEWS / Ticket / Movie / Gallery アーカイブの表示件数（is_post_type_archive に依存しない） */
 add_action(
 	'pre_get_posts',
-	static function ( $query ) {
-		if ( is_admin() || ! $query->is_main_query() ) {
+	static function ($query) {
+		if (is_admin() || ! $query->is_main_query()) {
 			return;
 		}
-		$post_type = $query->get( 'post_type' );
-		if ( is_array( $post_type ) ) {
-			$post_type = reset( $post_type );
+		$post_type = $query->get('post_type');
+		if (is_array($post_type)) {
+			$post_type = reset($post_type);
 		}
-		if ( empty( $post_type ) ) {
+		if (empty($post_type)) {
 			return;
 		}
-		$fanclub_archives = array( EVOLUER_PT_FANCLUB_NEWS, EVOLUER_PT_FANCLUB_TICKET, 'fc-movie', 'fc-gallery' );
-		if ( ! in_array( $post_type, $fanclub_archives, true ) ) {
+		$fanclub_archives = array(EVOLUER_PT_FANCLUB_NEWS, EVOLUER_PT_FANCLUB_TICKET, 'fc-movie', 'fc-gallery');
+		if (! in_array($post_type, $fanclub_archives, true)) {
 			return;
 		}
 		// 単一投稿は除外（/fanclub/.../news/slug/ など）。
-		if ( (string) $query->get( 'name' ) !== '' || (int) $query->get( 'p' ) > 0 ) {
+		if ((string) $query->get('name') !== '' || (int) $query->get('p') > 0) {
 			return;
 		}
-		$query->set( 'posts_per_page', 20 );
+		$query->set('posts_per_page', 20);
 	}
 );
 
@@ -1023,9 +1040,9 @@ function change_default_title($title)
 		$title = '新着情報のタイトルを入力';
 	} elseif ($screen->post_type == 'schedule') {	//カスタム投稿タイプ：schedule
 		$title = '出演情報のタイトルを入力';
-	} elseif ( defined( 'EVOLUER_PT_FANCLUB_NEWS' ) && $screen->post_type === EVOLUER_PT_FANCLUB_NEWS ) {
+	} elseif (defined('EVOLUER_PT_FANCLUB_NEWS') && $screen->post_type === EVOLUER_PT_FANCLUB_NEWS) {
 		$title = 'ファンクラブ新着情報のタイトルを入力';
-	} elseif ( defined( 'EVOLUER_PT_FANCLUB_TICKET' ) && $screen->post_type === EVOLUER_PT_FANCLUB_TICKET ) {
+	} elseif (defined('EVOLUER_PT_FANCLUB_TICKET') && $screen->post_type === EVOLUER_PT_FANCLUB_TICKET) {
 		$title = 'ファンクラブチケットのタイトルを入力';
 	}
 	return $title;
@@ -1640,3 +1657,70 @@ function admin_analytics_menu_link()
 					add_action('admin_print_footer_scripts', 'admin_analytics_menu_link');
 
 						?>
+
+<?php
+/**
+ * Temporarily disable Shibuki fanclub pages and show a Coming Soon screen.
+ * Covers /fanclub/shibuki/... and /shibuki/... routes.
+ */
+add_action(
+	'template_redirect',
+	static function () {
+		if (is_admin() || wp_doing_ajax() || wp_doing_cron()) {
+			return;
+		}
+		if (defined('REST_REQUEST') && REST_REQUEST) {
+			return;
+		}
+
+		$path = function_exists('evoluer_get_fanclub_request_path')
+			? evoluer_get_fanclub_request_path()
+			: trim((string) parse_url(isset($_SERVER['REQUEST_URI']) ? wp_unslash($_SERVER['REQUEST_URI']) : '', PHP_URL_PATH), '/');
+
+		$is_shibuki_path = ('' !== $path) && (bool) preg_match('#^(fanclub/shibuki|shibuki)(/|$)#', $path);
+		$is_shibuki_login_redirect = false;
+		if ('fanclub/login' === $path) {
+			$artist = isset($_GET['artist']) ? sanitize_key(wp_unslash($_GET['artist'])) : '';
+			if ('shibuki' === $artist) {
+				$is_shibuki_login_redirect = true;
+			}
+			if (! $is_shibuki_login_redirect && ! empty($_GET['redirect_to'])) {
+				$redirect_to = (string) wp_unslash($_GET['redirect_to']);
+				$redirect_path = trim((string) parse_url($redirect_to, PHP_URL_PATH), '/');
+				$site_path = trim((string) parse_url(home_url('/'), PHP_URL_PATH), '/');
+				if ($site_path !== '' && 0 === strpos($redirect_path, $site_path . '/')) {
+					$redirect_path = trim(substr($redirect_path, strlen($site_path)), '/');
+				}
+				if (preg_match('#^(fanclub/shibuki|shibuki)(/|$)#', $redirect_path)) {
+					$is_shibuki_login_redirect = true;
+				}
+			}
+		}
+
+		if (! $is_shibuki_path && ! $is_shibuki_login_redirect) {
+			return;
+		}
+
+		status_header(200);
+		nocache_headers();
+		get_header();
+?>
+	<main id="" class="flex items-center justify-center bg-[#DDE4DE] min-h-[80vh] py-[80px] xl:pt-[200px]">
+		<section class="w-full max-w-[980px] mx-auto px-[30px] text-center">
+			<h1 class="text-[28px] md:text-[36px] lg:text-[48px] xl:text-[60px] font-bold text-[#222] mb-[16px]">紫吹 official fan club</h1>
+			<p class="text-[18px] md:text-[24px] lg:text-[32px] xl:text-[40px] tracking-[2px] text-[#13AA05] font-semibold mb-[20px]">COMING SOON</p>
+			<p class="text-[14px] md:text-[16px] lg:text-[20px] xl:text-[24px] text-[#666] leading-relaxed">
+				現在、こちらのページは公開準備中です。<br>
+				公開までしばらくお待ちください。
+			</p>
+			<div class="mt-[32px]">
+				<a href="<?php echo esc_url(home_url('/')); ?>" class="inline-block !underline !underline-offset-4 text-[#13AA05] text-[14px] md:text-[16px]">トップページへ戻る</a>
+			</div>
+		</section>
+	</main>
+<?php
+		get_footer();
+		exit;
+	},
+	-1000
+);
